@@ -1,4 +1,4 @@
-. NOTE: Currently, the game can only be played with Random Randy
+NOTE: Currently, the game can only be played with Random Randy
 
 ** .py files **
 . checkers.py: Contains all of the classes corresponding to a checkers gamestate.
