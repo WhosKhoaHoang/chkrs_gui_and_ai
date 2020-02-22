@@ -30,17 +30,17 @@ def random_randy(gs, cpu_color):
 
 
 #FOCUS HERE
-def minimax(gamestate, cpu_player, depth):
+def minimax(gamestate, cpu_color, depth):
     """
     Executes a cpu move based on a depth-limited minimax algorithm.
     @gamestate: The game state of a checkers match. The game state is
                 altered as the minimax search progresses down the tree
                 of possible move outcomes.
-    @cpu_player: The color of the CPU
+    @cpu_color: The color of the CPU
     @depth: An int indicating how deep to traverse down the tree of
             possible move outcomes
     type gamestate: Checkers
-    type cpu_player: str
+    type cpu_color: str
     type depth: int
     """
 
@@ -48,11 +48,11 @@ def minimax(gamestate, cpu_player, depth):
     print("IN minimax")
     print(depth)
     print(gamestate)
-    print(cpu_player)
+    print(cpu_color)
     print("\n\n")
 
     best_move = None
-    player_color = "B" if cpu_player == "R" else "B"
+    player_color = "B" if cpu_color == "R" else "B"
 
     #Base case of Mini Max
     if depth == 0 or gamestate.get_winner() != None:
@@ -62,28 +62,29 @@ def minimax(gamestate, cpu_player, depth):
         print(depth)
         print("\n\n")
 
-        return (minimax_eval(gamestate, cpu_player), None)
-    elif gamestate.get_turn() == cpu_player:
+        return (minimax_eval(gamestate, cpu_color), None)
+    elif gamestate.get_turn() == cpu_color:
 
         print("\n\n")
         print("IN elif")
         print("\n\n")
 
         best_val = float("-inf")
-        valid_moves = gamestate._valid_moves_exist(cpu_player, check_for_cpu=True)
+        valid_moves = gamestate._valid_moves_exist(cpu_color, check_for_cpu=True)
         print("\n\n")
         print(valid_moves)
         print("\n\n")
 
         for move in valid_moves:
             #move is a 4-tuple: (start_row, start_col, target_row, target_col)
-            dummy_game = checkers.Checkers(player_color, gamestate.get_board(), cpu_player)
+            dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
+                                           init_turn = cpu_color)
 
             print("\nMove made:")
             print(move[0], move[1], move[2], move[3])
 
-            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1) #TODO: Figure out why +1 is needed...
-            (val, move_made) = minimax(dummy_game, cpu_player, depth-1)
+            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            (val, move_made) = minimax(dummy_game, cpu_color, depth-1)
             if val > best_val:
                 best_move = move
                 best_val = val
@@ -103,13 +104,14 @@ def minimax(gamestate, cpu_player, depth):
         print("\n\n")
 
         for move in valid_moves:
-            dummy_game = checkers.Checkers(cpu_player, gamestate.get_board(), player_color)
+            dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
+                                           init_turn = player_color)
 
             print("\nMove made:")
             print(move[0], move[1], move[2], move[3])
 
-            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1) #TODO: Figure out why +1 is needed...
-            (val, move_made) = minimax(dummy_game, cpu_player, depth-1)
+            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            (val, move_made) = minimax(dummy_game, cpu_color, depth-1)
             if val < best_val:
                 best_move = move
                 best_val = val
@@ -118,34 +120,13 @@ def minimax(gamestate, cpu_player, depth):
 
 
 #TODO: Implement a stronger evaluation function
-def minimax_eval(gamestate, cpu_player):
+def minimax_eval(gamestate, cpu_color):
     '''The evaluation function of a minimax algorithm.'''
     score = 0
-    score += gamestate.get_red_count() - gamestate.get_black_count() if cpu_player == "R" else\
+    score += gamestate.get_red_count() - gamestate.get_black_count() if cpu_color == "R" else\
              gamestate.get_black_count() - gamestate.get_red_count()
 
     return score
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #RUN THIS MODULE (checkersai.py) FOR TESTING

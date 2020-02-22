@@ -9,10 +9,10 @@ class CheckersBoard:
     def __init__(self, hum_player = "B", cpu_opp = "None", allow_forced_piece_hls=True):
         '''Initializes the attributes of a Checkers GUI game.'''
         self._root = tkinter.Tk()
-        self._root.configure(background='black')
+        self._root.configure(background="black")
         self._root.wm_title("Checkers")
 
-        self._gamestate = checkers.Checkers("B")
+        self._gamestate = checkers.Checkers(init_turn="B")
         self._num_rows = 8
         self._num_cols = 8
 

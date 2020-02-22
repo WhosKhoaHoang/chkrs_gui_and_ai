@@ -28,22 +28,22 @@ class GameOverError(Exception):
 class Checkers:
     '''A class that represents a checkers gamestate.'''
 
-    def __init__(self, player_color, initial_config = [], turn="B"):
+    def __init__(self, init_config = [], init_turn="B"):
         '''Initializes a checkers gamestate.'''
-        self._player = player_color
+        #self._player = player_color
         self._num_rows = 8
         self._num_cols = 8
         self._red_count = 12
         self._black_count = 12
         #self._turn = "B" #Black goes first
         #self._turn = "R"  #FOR TESTING GUI!!!
-        self._turn = turn
+        self._turn = init_turn
 
-        if initial_config == []:
+        if init_config == []:
             self._board = self._make_gameboard()
             #self._board = self._make_test_board() #FOR TESTING GUI!!!
         else:
-            self._board = deepcopy(initial_config)
+            self._board = deepcopy(init_config)
         self._test_board = self._make_test_board() #FOR TESTING!!!
         self._game_over = False
         self._winner = None
@@ -51,12 +51,16 @@ class Checkers:
 
         #For forced situations involving player (e.g., combo jumps):
         self._must_move_again = False
-        self._must_move_again_piece = None #Perhaps this variable can control a highlighted piece in the GUI version...
+        self._must_move_again_piece = None
+        #Perhaps this^ variable can control a
+        #highlighted piece in the GUI version...
         self._forced_jumps = []
 
         #For forced situations involving opponent:
         self._opp_forced = False
-        self._opp_forced_pieces = [] #Perhaps this variable can control highlighted pieces in the GUI version...
+        self._opp_forced_pieces = []
+        #Perhaps this^ variable can control
+        #highlighted pieces in the GUI version...
         self._opp_forced_jumps = []
         
         self._ts_cells = [(0, c) for c in range(self._num_cols)]   #For king'ing situations
@@ -71,10 +75,11 @@ class Checkers:
         self._board[6][5] = Piece("R", 6, 5)
         '''
 
+    """
     def get_player_color(self):
         '''Returns the color of the human player.'''
         return self._player
-
+    """
 
     def get_winner(self):
         '''Returns the winner of the game.'''
@@ -170,11 +175,21 @@ class Checkers:
                     count += 1
         return count
 
-    #p in p_row and p_col stands for "piece" and t in t_row and t_col stands for "target"
-    #An i preceding these letters stands for "index" -- i.e., these row and column values are
-    #list index friendly (values start at 0)
+
     def make_move(self, p_row, p_col, t_row, t_col):
-        '''Takes a chosen piece and moves it to a target position. '''        
+        """
+        Updates a Checkers game state by moving a piece at some starting position to
+        a target position. p in p_row and p_col stands for 'piece' and t in t_row and
+        t_col stands for 'target'. An i preceding these letters stands for "index" --
+        that is, these row and column values are list-index friendly (i.e., 0-based).
+        The function is called using non
+        0-based indexing.
+        @p_row: A checkers piece's starting row before a move
+        @p_col: A checkers piece's starting col before a move
+        @t_row: A checker piece's target row to move to
+        @t_col: A chekcer piece's target col to move to
+        return: 
+        """
         ip_row, ip_col = p_row-1, p_col-1   
         it_row, it_col = t_row-1, t_col-1
 
@@ -521,6 +536,7 @@ class Piece:
     def set_new_pos(self, i_row, i_col):
         '''Sets a new row and column for a piece.'''
         self._pos = (i_row, i_col)
+
 
     def get_color(self):
         '''Returns the color of a Piece.'''
