@@ -23,19 +23,22 @@ class GameOverError(Exception):
 
 
 
-#This gamestate corresponds to standard U.S. Rules, which means that you can only jump backwards IF you're a king.
+#This gamestate corresponds to standard U.S. Rules,
+#which means that you can only jump backwards IF you're a king.
 class Checkers:
     '''A class that represents a checkers gamestate.'''
 
-    def __init__(self, player_color, initial_config = []):
+    def __init__(self, player_color, initial_config = [], turn="B"):
         '''Initializes a checkers gamestate.'''
         self._player = player_color
         self._num_rows = 8
         self._num_cols = 8
         self._red_count = 12
         self._black_count = 12
-        self._turn = "B" #Black goes first
+        #self._turn = "B" #Black goes first
         #self._turn = "R"  #FOR TESTING GUI!!!
+        self._turn = turn
+
         if initial_config == []:
             self._board = self._make_gameboard()
             #self._board = self._make_test_board() #FOR TESTING GUI!!!
@@ -188,6 +191,7 @@ class Checkers:
         self._forced_jumps = [] #(re)set this instance variable to an empty list
         adj_opp_cells = self._board[it_row][it_col].get_adj_opps(it_row, it_col, self._board)
         self._check_if_combo_jump(move_type, it_row, it_col, adj_opp_cells)
+        #This^ function will append to the _forced_jumps list.
         
         #If self._forced_jumps is empty, then switch turns. Else, it's still the current player's turn and
         #they MUST make a choice (on the next move) of which cells to jump over in the self._forced_jumps list.
@@ -198,7 +202,8 @@ class Checkers:
             self._switch_turn(self._turn)
             self._check_if_opp_forced_to_move()
         else:
-            self._opp_forced = False #Set to false because the forced move would have already been made at this point
+            self._opp_forced = False
+            #^Set to false because the forced move would have already been made at this point
             self._must_move_again = True
             self._must_move_again_piece = (it_row, it_col)
 
@@ -273,12 +278,19 @@ class Checkers:
         '''Determines if the selected (row, column) contains a valid piece'''
         if (not self._within_row_nums(ip_row) or not self._within_col_nums(ip_col)
             or not self._piece_matches_turn(ip_row, ip_col)):
+            print("IN _check_if_valid_piece's if 1:")
+            print((ip_row, ip_col))
+            print(not self._within_row_nums(ip_row))
+            print(not self._within_col_nums(ip_col))
+            print(not self._piece_matches_turn(ip_row, ip_col))
             raise InvalidMoveError("valid piece not selected")
 
         if self._must_move_again and (ip_row, ip_col) != self._must_move_again_piece:
+            print("IN _check_if_valid_piece's if 2:")
             raise InvalidMoveError("valid piece not selected")
 
         if self._opp_forced and (ip_row, ip_col) not in self._opp_forced_pieces:
+            print("IN _check_if_valid_piece's if 3:")
             raise InvalidMoveError("valid piece not selected")
 
 
@@ -369,6 +381,7 @@ class Checkers:
         else:
             board[-1].append(" ")    
 
+
     #check_for_cpu as in check for valid moves when it's the CPU's turn.
     def _valid_moves_exist(self, turn, check_for_cpu=False): #Pass in a turn so that you don't have to manually switch turns!
         '''Determines if any moves exist for the given player. Returns a boolean specifying if moves exist
@@ -402,7 +415,7 @@ class Checkers:
                     self._check_moves_in_nb_cells(i_row, i_col, valid_moves, turn, piece.piece_is_king())
 
         return (valid_moves != [], turn) if not check_for_cpu else valid_moves
-    
+
 
     def _check_moves_in_tr_cell(self, i_row, i_col, valid_moves):
         '''Determines what moves can be done in the top-right cell.'''

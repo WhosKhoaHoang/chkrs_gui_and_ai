@@ -93,18 +93,29 @@ class CheckersBoard:
             #The code in _update_GUI board was originally exclusively in this function in this section
 
 
+    #FOCUS HERE
     def _cpu_move(self, event, midpoint_mappings):
-        '''Executes a CPU player's move.'''
+        '''Executes a CPU player's move.'''        
         while (self._gamestate.get_turn() == self._cpu_player
                and self._gamestate.get_winner() == None):
             if self._cpu_opp == "Random Randy":
                 move_made = checkersai.random_randy(self._gamestate, self._cpu_player)
                 #move_made is a 4-tuple: (ip_row, ip_col, it_row, it_col)
-            elif self._cpu_opp == "Mini Max":
-                move_made = checkersai.minimax(self._gamestate, self._hum_player, 3)
+                print("Move that was made:")
                 print(move_made)
-                #beware that the checkersai.minimax function returns a tuple ((heuristic_value, move_made))
+            elif self._cpu_opp == "Mini Max":
                 
+                print("\n\n")
+                print("IN Mini Max BLOCK")
+                print(self._gamestate)
+                print(self._hum_player)
+                print("\n\n")
+
+                #move_made = checkersai.minimax(self._gamestate, self._cpu_player, 3)
+                move_made = checkersai.minimax(self._gamestate, self._cpu_player, 3)[1]
+                print("Move that was made:")
+                print(move_made)
+
             #I think these lines of code should only be executed if a valid move exists...
             if move_made != None:
                 self._highlight_clicked_piece(event, midpoint_mappings, for_cpu=True,
@@ -113,10 +124,11 @@ class CheckersBoard:
                 time.sleep(0.5) #To give time for human to see what move was selected.
                 self._try_move(event, midpoint_mappings, for_cpu=True,
                                cpu_row_col = (move_made[2], move_made[3]))
-        
+
             else: #If a move does exist...
                 #Switch turns?
                 pass
+
 
     def _try_move(self, event, midpoint_mappings, for_cpu=False, cpu_row_col=None):
         '''Tries to perform a move executed by a player.'''
@@ -309,7 +321,7 @@ class CheckersBoard:
             if self._gamestate.get_board()[i_row][i_col].piece_is_king():
                     self._draw_crown(oval_coords[0], oval_coords[1],
                                      oval_coords[2], oval_coords[3])
-                    
+
 
     def _draw_crown(self, tlx, tly, brx, bry):
         '''Takes the corner coordinates of an oval's bounding box and draws a crown inside
@@ -337,7 +349,7 @@ class CheckersBoard:
             if dist < min_dist:
                 nearest_cell = (item[0][0], item[0][1])
                 min_dist = dist
-                
+
         return nearest_cell
 
 
@@ -345,7 +357,7 @@ class CheckersBoard:
 #For testing
 if __name__ == "__main__":
     #b = CheckersBoard(cpu_opp="Random Randy")
-    b = CheckersBoard(cpu_opp="Random Randy", allow_forced_piece_hls=False)
-    #b = CheckersBoard(cpu_opp="Mini Max", allow_forced_piece_hls=False)
+    #b = CheckersBoard(cpu_opp="Random Randy", allow_forced_piece_hls=False)
+    b = CheckersBoard(cpu_opp="Mini Max", allow_forced_piece_hls=False)
 
     b.start()
