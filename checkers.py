@@ -459,6 +459,7 @@ class Checkers:
         Returns a boolean indicating if a given row is within
         the appropriate range of row numbers (0 through 7).
         @i_row: A 0-based index for a row
+        type i_row: int
         return: A boolean indicating if a given row is within
                 the appropriate range of row numbers (0 through 7).
         rtype: bool
@@ -471,6 +472,7 @@ class Checkers:
         Returns a boolean indicating if a given col is within
         the appropriate range of column numbers (0 through 7).
         @i_col: A 0-based index for a col
+        type i_col: int
         return: A boolean indicating if a given col is within
                 the appropriate range of column numbers (0 through 7).
         rtype: bool
@@ -483,6 +485,8 @@ class Checkers:
         Determines if the piece selected matches the current turn.
         @ip_row: A 0-based index of a player's row
         @ip_col: A 0-based index of a player's col
+        type ip_row: int
+        type ip_col: int
         return: True if the selected piece matches the current
                 turn ("B" or "R") or False otherwise.
         rtype: bool
@@ -591,10 +595,16 @@ class Checkers:
     def _init_start_pos(self, color, board, i_row, i_col):
         """
         Establishes the initial arrangements of the red or black pieces.
+        Note that no return type has been specified because the game
+        board being modified (a list) has pass-by-reference characteristics.
         @color: The color of the pieces to arrange
         @board: A list representation of a gameboard
         @i_row: A 0-based row index
         @i_col: A 0-based col index
+        type i_row: int
+        type i_col: int
+        return: None
+        rtype: None
         """
         if ((i_row % 2 == 0 and i_col % 2 != 0) or
             (i_row % 2 != 0 and i_col % 2 == 0)):
@@ -653,19 +663,51 @@ class Checkers:
 
 
     def _check_moves_in_tr_cell(self, i_row, i_col, valid_moves):
-        '''Determines what moves can be done in the top-right cell.'''
+        """
+        Determines what moves can be done in the top-right cell.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        @valid_moves: A list to append valid moves to for the piece
+                      in the top-right corner of the gameboard
+        type i_row: int
+        type i_col: int
+        type valid_moves: [tuple]
+        return: None
+        rtype: None
+        """
         self._try_move(i_row, i_col, i_row+1, i_col-1, valid_moves) #down-left step
         self._try_move(i_row, i_col, i_row+2, i_col-2, valid_moves) #down-left jump
 
 
     def _check_moves_in_bl_cell(self, i_row, i_col, valid_moves):
-        '''Determines what moves can be done in the bottom-left cell.'''
-        self._try_move(i_row, i_col, i_row-1, i_col+1, valid_moves) #up-right step
+        """
+        Determines what moves can be done in the bottom-left cell.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        @valid_moves: A list to append valid moves to for the piece
+                      in the bottom-left corner of the gameboard
+        type i_row: int
+        type i_col: int
+        type valid_moves: [tuple]
+        return: None
+        rtype: None
+        """        self._try_move(i_row, i_col, i_row-1, i_col+1, valid_moves) #up-right step
         self._try_move(i_row, i_col, i_row-2, i_col+2, valid_moves) #up-right jump
         
 
     def _check_moves_in_ls_cells(self, i_row, i_col, valid_moves, turn, is_king):
-        '''Determines what moves can be done in the left-side cells.'''
+        """
+        Determines what moves can be done in the left side of the gameboard.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        @valid_moves: A list to append valid moves to for the pieces
+                      in the left side of the gameboard
+        type i_row: int
+        type i_col: int
+        type valid_moves: [tuple]
+        return: None
+        rtype: None
+        """
         if turn == "R" or is_king:
             self._try_move(i_row, i_col, i_row-1, i_col+1, valid_moves) #up-right step
             self._try_move(i_row, i_col, i_row-2, i_col+2, valid_moves) #up-right jump
@@ -675,7 +717,18 @@ class Checkers:
 
 
     def _check_moves_in_rs_cells(self, i_row, i_col, valid_moves, turn, is_king):
-        '''Determines what moves can be done in the right-side cells.'''
+        """
+        Determines what moves can be done in the right side of the gameboard.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        @valid_moves: A list to append valid moves to for the pieces
+                      in the right side of the gameboard
+        type i_row: int
+        type i_col: int
+        type valid_moves: [tuple]
+        return: None
+        rtype: None
+        """
         if turn == "R" or is_king:
             self._try_move(i_row, i_col, i_row-1, i_col-1, valid_moves) #up-left step
             self._try_move(i_row, i_col, i_row-2, i_col-2, valid_moves) #up-left jump
@@ -685,7 +738,18 @@ class Checkers:
 
 
     def _check_moves_in_ts_cells(self, i_row, i_col, valid_moves, turn):
-        '''Determines what moves can be done in the top-side cells.'''
+        """
+        Determines what moves can be done in the top side of the gameboard.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        @valid_moves: A list to append valid moves to for the pieces
+                      in the top side of the gameboard
+        type i_row: int
+        type i_col: int
+        type valid_moves: [tuple]
+        return: None
+        rtype: None
+        """
         self._try_move(i_row, i_col, i_row+1, i_col+1, valid_moves) #down-right step        
         self._try_move(i_row, i_col, i_row+2, i_col+2, valid_moves) #down-right jump        
         self._try_move(i_row, i_col, i_row+1, i_col-1, valid_moves) #down-left step        
@@ -693,7 +757,18 @@ class Checkers:
 
 
     def _check_moves_in_bs_cells(self, i_row, i_col, valid_moves, turn):
-        '''Determines what moves can be done in the bottom-side cells.'''
+        """
+        Determines what moves can be done in the bottom side of the gameboard.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        @valid_moves: A list to append valid moves to for the pieces
+                      in the bottom side of the gameboard
+        type i_row: int
+        type i_col: int
+        type valid_moves: [tuple]
+        return: None
+        rtype: None
+        """
         self._try_move(i_row, i_col, i_row-1, i_col-1, valid_moves) #up-left step
         self._try_move(i_row, i_col, i_row-2, i_col-2, valid_moves) #up-left jump
         self._try_move(i_row, i_col, i_row-1, i_col+1, valid_moves) #up-right step
@@ -701,7 +776,19 @@ class Checkers:
     
 
     def _check_moves_in_nb_cells(self, i_row, i_col, valid_moves, turn, is_king):
-        '''Determines what moves can be done in the non-boundary cells.'''
+        """
+        Determines what moves can be done in the
+        non-boundary cells of the gameboard.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        @valid_moves: A list to append valid moves to for the pieces
+                      in the non-boundary cells of the gameboard
+        type i_row: int
+        type i_col: int
+        type valid_moves: [tuple]
+        return: None
+        rtype: None
+        """
         if turn == "R" or is_king:
             self._try_move(i_row, i_col, i_row-1, i_col-1, valid_moves) #up-left step
             self._try_move(i_row, i_col, i_row-2, i_col-2, valid_moves) #up-left jump
@@ -715,23 +802,39 @@ class Checkers:
 
 
     def _try_move(self, ip_row, ip_col, it_row, it_col, valid_moves):
-        '''Tries executing a move and appends the move to a list if successful.'''
+        """
+        Tries executing a move and appends the move to a list if
+        successful (i.e., no exceptions are thrown). A move is a
+        4-tuple of the following format:
+            (starting row, starting column,
+             targ row, targ column,
+             move type (e.g., "step", "jump"))
+        @ip_row: A 0-based index of a piece's starting row
+        @ip_col: A 0-based index of a piece's starting col
+        @it_row: A 0-based index of a target position's row
+        @it_col: A 0-based index of a target position's col
+        @valid_moves: A list to append the 4-tuple:
+                        (ip_row, ip_col, it_row,
+                         it_col, move_type)
+                      to if the move is valid.
+        type ip_row: int
+        type ip_col: int
+        type it_row: int
+        type it_col: int
+        type valid_moves: list
+        return: None
+        rtype: None
+        """
         try:
             dummy, move_type = self._check_if_valid_move(ip_row, ip_col, it_row, it_col)
             valid_moves.append((ip_row, ip_col, it_row, it_col, move_type)) #need move_type for AI
+            #Example move: (0, 3, 1, 4, 'step')
         except:
             pass
 
-    
-    def _draw_gameboard(self): #FOR TESTING
-        '''Prints a checkers gameboard to the console.'''
-        for row in self._board:
-            print()
-            for col in row:
-                print(".", end=" ") if col == " " else print(col.get_color(), end=" ")
 
 
-                
+
 class Piece:
     '''Represents a checkers piece.'''
 
