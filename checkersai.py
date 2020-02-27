@@ -3,13 +3,13 @@
 
 import checkers, random
 
-#For your AIs, try to focus on returning moves only. Leave the process of how the move changes
-#the gamestate to the GUI code.
+#For your AIs, try to focus on returning moves only. Leave the
+#process of how the move changes the gamestate to the GUI code.
 
 def random_randy(gs, cpu_color):
     """
-    Function representing an AI that performs random moves. Takes a gamestate and
-       the cpu's color and returns a valid random move.
+    Function representing an AI that performs random moves. Takes a
+    gamestate and the cpu's color and returns a valid random move.
     @cpu_color: The color of the CPU opponent ("R" or "B")
     type cpu_color: str
     return: A 4-tuple that represents the move to be made:
@@ -29,7 +29,8 @@ def random_randy(gs, cpu_color):
     #(start_row, start_col, target_row, target_col)
 
 
-#FOCUS HERE
+
+
 def minimax(gamestate, cpu_color, depth):
     """
     Executes a cpu move based on a depth-limited minimax algorithm.
@@ -119,6 +120,8 @@ def minimax(gamestate, cpu_color, depth):
         return (best_val, best_move)
 
 
+
+
 #TODO: Implement a stronger evaluation function
 def minimax_eval(gamestate, cpu_color):
     '''The evaluation function of a minimax algorithm.'''
@@ -127,6 +130,9 @@ def minimax_eval(gamestate, cpu_color):
              gamestate.get_black_count() - gamestate.get_red_count()
 
     return score
+
+
+
 
 
 #RUN THIS MODULE (checkersai.py) FOR TESTING

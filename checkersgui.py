@@ -357,7 +357,7 @@ class CheckersBoard:
 #For testing
 if __name__ == "__main__":
     #b = CheckersBoard(cpu_opp="Random Randy")
-    #b = CheckersBoard(cpu_opp="Random Randy", allow_forced_piece_hls=False)
-    b = CheckersBoard(cpu_opp="Mini Max", allow_forced_piece_hls=False)
+    b = CheckersBoard(cpu_opp="Random Randy", allow_forced_piece_hls=False)
+    #b = CheckersBoard(cpu_opp="Mini Max", allow_forced_piece_hls=False)
 
     b.start()

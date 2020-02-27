@@ -3,13 +3,13 @@
 from copy import deepcopy
 
 class InvalidMoveError(Exception):
-    '''An error that represents an invalid move.'''
+    """ An error that represents an invalid move. """
     pass
 
 
 
 class OutOfBoundsError(Exception):
-    '''An error that represents a move that has gone out of bounds.'''
+    """ An error that represents a move that has gone out of bounds. """
     pass
 #We can't assume that this gamestate will be used by one particular kind of UI.
 #The UI could be a console UI or a GUI. This type of exception probably won't be an
@@ -18,7 +18,7 @@ class OutOfBoundsError(Exception):
 
 
 class GameOverError(Exception):
-    '''An error that represents a game over.'''
+    """ An error that represents a game over. """
     pass
 
 
@@ -26,10 +26,16 @@ class GameOverError(Exception):
 #This gamestate corresponds to standard U.S. Rules,
 #which means that you can only jump backwards IF you're a king.
 class Checkers:
-    '''A class that represents a checkers gamestate.'''
+    """ A class that represents a checkers gamestate. """
 
     def __init__(self, init_config = [], init_turn="B"):
-        '''Initializes a checkers gamestate.'''
+        """
+        Initializes a checkers gamestate.
+        @init_config: The initial configuration of the gameboard
+        @init_turn: Indicates which player ("B" or "R") goes first
+        type initial_config: list
+        type init_turn: str
+        """
         #self._player = player_color
         self._num_rows = 8
         self._num_cols = 8
@@ -82,24 +88,47 @@ class Checkers:
     """
 
     def get_winner(self):
-        '''Returns the winner of the game.'''
+        """
+        Returns the winner of the game.
+        return: The winner of the game ("B" or "R")
+        type: str
+        """
         return self._winner
 
 
     def need_to_move_again(self):
-        '''Returns a boolean specifying if the player must move again to make
-           a combo jump.'''
+        """
+        Returns a boolean specifying if the player must
+        move again to make a combo jump.
+        return: A boolean specifying if the player must
+                move again to make a combo jump
+        rtype: bool
+        """
         return self._must_move_again        
 
 
+    #TODO: Consider renaming this method to must_move_again_pos?
     def must_move_piece(self):
-        '''Returns the the player's piece that must be moved.'''
+        """
+        Returns the 0-based (row, col) that a piece must make
+        another move to (after having already made a move. E.g.,
+        for double-jumping situations).
+        return: A 2-tuple whose components represent the
+                0-based (row, col) that a piece must perform
+                another move to
+        rtype: tuple
+        """
         return self._must_move_again_piece
 
 
     def opp_is_forced(self):
-        '''Returns a boolean specifying if the opponent is forced to move on
-           the next turn (after the player had moved).'''
+        """
+        Returns a boolean specifying if the opponent is forced to move on
+        the next turn (after the player had already moved).
+        return: A boolean specifying if the opponent is forced to move on
+                the next turn (after the player had already moved).
+        rtype: bool
+        """
         return self._opp_forced
 
 
@@ -109,16 +138,27 @@ class Checkers:
         return self._opp_forced_pieces
 
 
-    def _switch_turn(self, cur_player):
-        '''Switches the player turn in an Othello game.'''
-        if cur_player == "R":
+    def _switch_turn(self, cur_turn):
+        """
+        Switches the player turn in a Checkers game.
+        @cur_turn: The current turn ("B" or "R")
+        type cur_turn: str
+        return: None
+        rtype: None
+        """
+        if cur_turn == "R":
             self._turn = "B"
         else:
             self._turn = "R"
-            
 
-    def _make_test_board(self):  #FOR TESTING!!!
-        '''Makes an empty test board that you can fill in to test a particular method.'''
+
+    def _make_test_board(self):
+        """
+        Makes an empty test board that you can fill in
+        to test a particular method.
+        return: None
+        rtype: None
+        """
         board = []
         for i in range(self._num_rows):
             board.append([])
@@ -128,8 +168,12 @@ class Checkers:
         return board
 
 
-    def print_test(self):  #FOR TESTING ON CONSOLE!!!
-        '''Prints the test board.'''
+    def print_test(self):
+        """
+        Prints a board for testing on the console.
+        return: None
+        rtype: None
+        """
         for row in self._test_board:
             print("")
             for col in row:
@@ -137,37 +181,67 @@ class Checkers:
 
 
     def get_row_num(self):
-        '''Returns the number of rows.'''
+        """
+        Returns the number of rows.
+        return: The number of rows
+        rtype: int
+        """
         return self._rows
 
 
     def get_col_num(self):
-        '''Returns the number of columns.'''
+        """
+        Returns the number of cols.
+        return: The number of cols
+        rtype: int
+        """
         return self._cols
 
 
     def get_board(self):
-        '''Returns a list representation of a checkers board.'''
+        """
+        Returns a list representation of a checkers board.
+        return: A list representation of a checkers board
+        rtype: list
+        """
         return self._board
 
 
     def get_red_count(self):
-        '''Returns the number of red pieces on the board.'''
+        """
+        Returns the number of red pieces on the board.
+        return: The number of red pieces on the board.
+        rtype: int
+        """
         return self._count_colors("R")
 
 
     def get_black_count(self):
-        '''Returns the number of black pieces on the board.'''
+        """
+        Returns the number of black pieces on the board.
+        return: The number of black pieces on the board.
+        rtype: int
+        """
         return self._count_colors("B")
 
 
     def get_turn(self):
-        '''Returns the current turn.'''
+        """
+        Returns the current turn.
+        return: The current turn ("B" or "R")
+        rtype: str
+        """
         return self._turn
     
 
     def _count_colors(self, color):
-        '''Counts the number of pieces corresponding to the given color.'''
+        """
+        Counts the number of pieces corresponding to the given color.
+        @color: The color ("B" or "R") to count pieces for
+        type color: str
+        return: The number of pieces corresponding to the given color.
+        rtype: int
+        """
         count = 0
         for row in self._board:
             for col in row:
@@ -188,7 +262,12 @@ class Checkers:
         @p_col: A checkers piece's starting col before a move
         @t_row: A checker piece's target row to move to
         @t_col: A chekcer piece's target col to move to
-        return: 
+        type p_row: int
+        type p_col: int
+        type t_row: int
+        type t_col: int
+        return: None
+        rtype: None
         """
         ip_row, ip_col = p_row-1, p_col-1   
         it_row, it_col = t_row-1, t_col-1
@@ -197,7 +276,7 @@ class Checkers:
         jumped_piece, move_type = self._check_if_valid_move(ip_row, ip_col, it_row, it_col)
         #If all of ^those^ checks pass, then go ahead and update the gamestate's board.
 
-        self._relocate_piece(ip_row, ip_col, it_row, it_col, jumped_piece, move_type)         
+        self._relocate_piece(ip_row, ip_col, it_row, it_col, jumped_piece)         
         self._check_if_need_to_king(it_row, it_col)
         
         #Check if opponent has any valid moves left
@@ -205,7 +284,7 @@ class Checkers:
 
         self._forced_jumps = [] #(re)set this instance variable to an empty list
         adj_opp_cells = self._board[it_row][it_col].get_adj_opps(it_row, it_col, self._board)
-        self._check_if_combo_jump(move_type, it_row, it_col, adj_opp_cells)
+        self._get_forced_jumps(move_type, it_row, it_col, adj_opp_cells)
         #This^ function will append to the _forced_jumps list.
         
         #If self._forced_jumps is empty, then switch turns. Else, it's still the current player's turn and
@@ -223,16 +302,34 @@ class Checkers:
             self._must_move_again_piece = (it_row, it_col)
 
 
-    def _check_if_combo_jump(self, move_type, it_row, it_col, adj_opp_cells):
-        '''Determines if a combo jump needs to be performed by the current player.'''
+    def _get_forced_jumps(self, move_type, it_row, it_col, adj_opp_cells):
+        """
+        Gets the jumps that must be made by the current player by
+        updating a Checker instance's _forced_jumps attribute.
+        @move_type: "jump" or "step"
+        @it_row: A 0-based index of a piece's target row to move to
+        @it_col: A 0-based index of a piece's target col to move to
+        @adj_opp_cells: A list of adjacent cells containing the opponent's pieces.
+        type it_row: int
+        type it_col: int
+        type adj_opp_cells: [str]
+        return: None
+        rtype: None
+        """
         if move_type == "jump":
             for cell in adj_opp_cells:
-                if self._board[it_row][it_col].jump_is_possible(it_row, it_col, cell[0], cell[1], self._board):
+                if self._board[it_row][it_col].jump_is_possible(
+                    it_row, it_col, cell[0], cell[1], self._board):
                     self._forced_jumps.append((2*cell[0]-it_row, 2*cell[1]-it_col))
                     
 
     def _check_if_opp_forced_to_move(self):
-        '''Determines if the opponent is forced to move when the turn switches to theirs.'''
+        """
+        Determines if the opponent is forced to move when the turn switches to
+        theirs by updating a Checkers intance's _opp_forced attribute.
+        return: None
+        rtype: None
+        """
         for i in range(self._num_rows):
             adj_opp_cells = []
             for j in range(self._num_cols):
@@ -250,7 +347,12 @@ class Checkers:
             
 
     def _check_if_opp_can_move(self):
-        '''Determines if the opposing player can perform anymore moves. If not, then the opposing player loses.'''
+        """
+        Determines if the opposing player can perform anymore moves.
+        If not, then the opposing player loses.
+        return: None
+        rtype: None
+        """
         self._checking_opp_valid_moves = True
         (valid_moves_exist, checked_player) = self._valid_moves_exist(self._opp_player(self._turn))
         if not valid_moves_exist:
@@ -259,10 +361,24 @@ class Checkers:
         self._checking_opp_valid_moves = False
 
 
-    def _relocate_piece(self, ip_row, ip_col, it_row, it_col, jumped_piece, move_type):
-        '''Relocates a piece and 'captures' an opposing piece if a jumped piece exists.'''
-        self._board[it_row][it_col] = self._board[ip_row][ip_col] #replace target position with chosen piece.
-        self._board[it_row][it_col].set_new_pos(it_row, it_col) #set new position
+    def _relocate_piece(self, ip_row, ip_col, it_row, it_col, jumped_piece):
+        """
+        Relocates a piece and "captures" an opposing piece if a jumped piece exists.
+        @ip_row: A 0-based index of a player's row
+        @ip_col: A 0-based index of a player's col
+        @it_row: A 0-based index of a target square's row
+        @it_col: A 0-based index of a target square's col
+        type ip_row: int
+        type ip_col: int
+        type it_row: int
+        type it_col: int
+        return: None
+        rtype: None
+        """
+        #replace targ position with chosen piece:
+        self._board[it_row][it_col] = self._board[ip_row][ip_col]
+        #set new position:
+        self._board[it_row][it_col].set_new_pos(it_row, it_col)
         self._board[ip_row][ip_col] = " "
         
         if jumped_piece != None:
@@ -270,7 +386,16 @@ class Checkers:
 
 
     def _check_if_need_to_king(self, it_row, it_col):
-        '''Determines if a piece that was just placed in a target (row, column) needs to be king'd.'''
+        """
+        Determines if a piece that was just placed in a
+        target (row, column) needs to be king'd.
+        @it_row: A 0-based index of a target square's row
+        @it_col: A 0-based index of a target square's col
+        type it_row: int
+        type it_col: int
+        return: None
+        rtype: None
+        """
         red_to_other_side = self._turn == "R" and (it_row, it_col) in self._ts_cells and \
                             not self._board[it_row][it_col].piece_is_king()
         black_to_other_side = self._turn == "B" and (it_row, it_col) in self._bs_cells and \
@@ -281,16 +406,36 @@ class Checkers:
 
 
     def _set_winner_after_checking(self, checked_player):
-        '''Sets the winner of the game after checking if the opponent had any moves left.'''
+        """
+        Sets the winner of the game after checking if
+        the opponent had any moves left.
+        return: None
+        rtype: None
+        """
         self._winner = self._opp_player(checked_player)
 
 
-    def _opp_player(self, player):
-        '''Returns the opposite player of the one passed in as an argument.'''
-        return "B" if player == "R" else "R"
+    def _opp_player(self, cur_player):
+        """
+        Returns the opposite player of the one passed in as an argument.
+        @cur_player: The player to get the opposite player for
+        type player: str
+        return: "B" if cur_player is "R", else "R"
+        rtype: None
+        """
+        return "B" if cur_player == "R" else "R"
+
 
     def _check_if_valid_piece(self, ip_row, ip_col):
-        '''Determines if the selected (row, column) contains a valid piece'''
+        """
+        Determines if the selected (row, column) contains a valid piece.
+        @ip_row: A 0-based index of a player's row
+        @ip_col: A 0-based index of a player's col
+        type ip_row: int
+        type ip_col: int
+        return: None
+        rtype: None
+        """
         if (not self._within_row_nums(ip_row) or not self._within_col_nums(ip_col)
             or not self._piece_matches_turn(ip_row, ip_col)):
             print("IN _check_if_valid_piece's if 1:")
@@ -310,27 +455,57 @@ class Checkers:
 
 
     def _within_row_nums(self, i_row):
-        '''Returns a boolean expression indicating if a given row is within the appropriate
-           range of row numbers (0 through 7).'''
+        """
+        Returns a boolean indicating if a given row is within
+        the appropriate range of row numbers (0 through 7).
+        @i_row: A 0-based index for a row
+        return: A boolean indicating if a given row is within
+                the appropriate range of row numbers (0 through 7).
+        rtype: bool
+        """
         return 0 <= i_row <= self._num_rows-1
 
 
     def _within_col_nums(self, i_col):
-        '''Returns a boolean expression indicating if a given row is within the appropriate
-           range of column numbers (0 through 7).'''
+        """
+        Returns a boolean indicating if a given col is within
+        the appropriate range of column numbers (0 through 7).
+        @i_col: A 0-based index for a col
+        return: A boolean indicating if a given col is within
+                the appropriate range of column numbers (0 through 7).
+        rtype: bool
+        """
         return 0 <= i_col <= self._num_cols-1
 
 
     def _piece_matches_turn(self, ip_row, ip_col):
-        '''Determines if the piece selected matches the current turn.'''
+        """
+        Determines if the piece selected matches the current turn.
+        @ip_row: A 0-based index of a player's row
+        @ip_col: A 0-based index of a player's col
+        return: True if the selected piece matches the current
+                turn ("B" or "R") or False otherwise.
+        rtype: bool
+        """
         return (self._board[ip_row][ip_col] != " "
                 and self._board[ip_row][ip_col].get_color() == self._turn)
 
 
     def _check_if_valid_move(self, ip_row, ip_col, it_row, it_col):
-        '''Determines if the target (row, column) represents a valid movement. If no exceptions were raised,
-           a list of cell positions to flip as well as the type of move just performed (jump or step) is returned.'''
-        
+        """
+        Determines if the target (row, column) represents a valid
+        movement. If no exceptions were raised, a list of cell pos-
+        itions to flip as well as the type of move just performed
+        (jump or step) is returned.
+        @ip_row: A 0-based index of a player's row
+        @ip_col: A 0-based index of a player's col
+        @it_row: A 0-based index of a target square's row
+        @it_col: A 0-based index of a target square's col
+        return: If no exceptions were raised, a list of cell pos-
+                itions to flip as well as the type of move just
+                performed (jump or step) is returned.
+        rtype: list
+        """
         #Is it out of bounds?
         if not self._within_row_nums(it_row) or not self._within_col_nums(it_col):
             raise OutOfBoundsError
@@ -359,13 +534,33 @@ class Checkers:
 
 
     def _move_is_jump(self, ip_row, ip_col, it_row, it_col):
+        """
+        Determines if a move is a jump.
+        @ip_row: A 0-based index of a player's row
+        @ip_col: A 0-based index of a player's col
+        @it_row: A 0-based index of a target square's row
+        @it_col: A 0-based index of a target square's col
+        return: True if the move performed is a jump or False otherwise
+        rtype: boolean
+        """
         return ((it_row, it_col) == (ip_row-2, ip_col-2) or   #Upper-left jump
                 (it_row, it_col) == (ip_row-2, ip_col+2) or   #Upper-right jump
                 (it_row, it_col) == (ip_row+2, ip_col+2) or   #Lower-right jump
                 (it_row, it_col) == (ip_row+2, ip_col-2))     #Lower-left jump 
-                
-        
+
+
+    #Code Refactoring Idea: Perhaps this method wouldn't be necessary
+    #if you you simply put "not obj._move_is_jump" in its place?
     def _move_is_step(self, ip_row, ip_col, it_row, it_col):
+        """
+        Determines if a move is a step.
+        @ip_row: A 0-based index of a player's row
+        @ip_col: A 0-based index of a player's col
+        @it_row: A 0-based index of a target square's row
+        @it_col: A 0-based index of a target square's col
+        return: True if the move performed is a step or False otherwise
+        rtype: bool
+        """
         return ((it_row, it_col) == (ip_row-1, ip_col-1) or   #Upper-left step
                 (it_row, it_col) == (ip_row-1, ip_col+1) or   #Upper-right step
                 (it_row, it_col) == (ip_row+1, ip_col+1) or   #Lower-right step
@@ -373,7 +568,12 @@ class Checkers:
 
 
     def _make_gameboard(self):
-        '''Creates a list representation of a checkers board.'''
+        """
+        Creates a list representation of a checkers board.
+        return: A list representation of a checkers board with
+                game pieces in their proper positions.
+        type: list
+        """
         board = []
         for i_row in range(self._num_rows):
             board.append([])
@@ -389,7 +589,13 @@ class Checkers:
 
 
     def _init_start_pos(self, color, board, i_row, i_col):
-        '''Establishes the initial arrangements of the red or black pieces.'''
+        """
+        Establishes the initial arrangements of the red or black pieces.
+        @color: The color of the pieces to arrange
+        @board: A list representation of a gameboard
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        """
         if ((i_row % 2 == 0 and i_col % 2 != 0) or
             (i_row % 2 != 0 and i_col % 2 == 0)):
             board[-1].append(Piece(color, i_row, i_col))
@@ -397,10 +603,24 @@ class Checkers:
             board[-1].append(" ")    
 
 
-    #check_for_cpu as in check for valid moves when it's the CPU's turn.
-    def _valid_moves_exist(self, turn, check_for_cpu=False): #Pass in a turn so that you don't have to manually switch turns!
-        '''Determines if any moves exist for the given player. Returns a boolean specifying if moves exist
-           and the player color for which this check was carried out for.'''
+    def _valid_moves_exist(self, turn, check_for_cpu=False):
+        """
+        Determines if any moves exist for the given player. If check_for_cpu
+        is False, then returns a 2-tuple whose first component is a boolean
+        specifying if moves and whose second component is the player color for
+        which this check was carried out for. If check_for_cpu is True, then
+        a list of valid moves is returned (used in implementing the AI).
+        @turn: The turn (i.e., "B" or "R") to check the existence of valid moves for
+        @check_for_cpu: A boolean indicating if this check for valid moves
+                        was for the CPU's turn.
+        type turn: str
+        type check_for_cpu: bool
+        return: If check_for_cpu is False, then returns a 2-tuple whose first
+                component is a boolean specifying if moves and whose second
+                component is the player color for which this check was carried
+                out for. If check_for_cpu is True, then a list of valid moves
+                is returned (used in implementing the AI).
+        """
         valid_moves = []
         tr_cell = (0, len(self._board[0])-1) #No need for top LEFT cuz no piece is ever gonna be there
         bl_cell = (len(self._board)-1, 0) #No need for bottom RIGHT cuz no piece is ever gonna be there
