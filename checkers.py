@@ -1,11 +1,12 @@
 #Contains all of the classes corresponding to a checkers gamestate.
-
 from copy import deepcopy
+
+
+
 
 class InvalidMoveError(Exception):
     """ An error that represents an invalid move. """
     pass
-
 
 
 class OutOfBoundsError(Exception):
@@ -16,10 +17,10 @@ class OutOfBoundsError(Exception):
 #issue for GUIs, but could be for console UIs.
 
 
-
 class GameOverError(Exception):
     """ An error that represents a game over. """
     pass
+
 
 
 
@@ -691,7 +692,9 @@ class Checkers:
         type valid_moves: [tuple]
         return: None
         rtype: None
-        """        self._try_move(i_row, i_col, i_row-1, i_col+1, valid_moves) #up-right step
+        """
+        self._try_move(i_row, i_col, i_row-1, i_col+1, valid_moves) #up-right step
+        self._try_move(i_row, i_col, i_row-1, i_col+1, valid_moves) #up-right step
         self._try_move(i_row, i_col, i_row-2, i_col+2, valid_moves) #up-right jump
         
 
@@ -836,10 +839,17 @@ class Checkers:
 
 
 class Piece:
-    '''Represents a checkers piece.'''
+    """ Represents a checkers piece. """
 
     def __init__(self, color, ip_row, ip_col):
-        '''Initializes the attributes of a Piece.'''
+        """
+        Initializes the attributes of a Piece.
+        @color: The color of the piece ("R" or "B")
+        @ip_row: A 0-based index of a piece's starting row
+        @ip_col: A 0-based index of a piece's starting col
+        type ip_row: int
+        type ip_col: int
+        """
         self._color = color
         self._opp = self.opp_piece()
         self._is_king = False
@@ -847,32 +857,55 @@ class Piece:
 
 
     def piece_is_king(self):
-        '''Determines if this Piece is a king.'''
+        """
+        Determines if this Piece is a king.
+        return: True if the piece if a king or false otherwise
+        rtype: bool
+        """
         return self._is_king
 
 
     def set_to_king(self):
-        '''Sets this Piece to a king piece.'''
+        """
+        Sets this Piece to a king piece.
+        return: None
+        rtype: None
+        """
         self._is_king = True
 
 
     def set_new_pos(self, i_row, i_col):
-        '''Sets a new row and column for a piece.'''
+        """
+        Sets a new row and column position for a piece.
+        @i_row: A 0-based row index
+        @i_col: A 0-based col index
+        type i_row: int
+        type i_col: int
+        """
         self._pos = (i_row, i_col)
 
 
     def get_color(self):
-        '''Returns the color of a Piece.'''
+        """
+        Returns the color of a Piece.
+        return: The color of the piece ("B" or "R")
+        rtype: str
+        """
         return self._color
 
 
     def possible_step_dirs(self):
-        '''Returns all the possible directions a particular type of piece can step in.'''
+        """
+        Returns all the possible directions a particular type of piece can step in.
+        return: A tuple containing all the possible directions (in the form of 2-tuples
+                the represent a board position) that a piece can perform a step in.
+        rtype: tuple
+        """
         if self._is_king:
             return ((self._pos[0]-1, self._pos[1]+1),   #upper-right
                     (self._pos[0]-1, self._pos[1]-1),   #upper-left
                     (self._pos[0]+1, self._pos[1]-1),   #lower-left
-                    (self._pos[0]+1, self._pos[1]+1))    #lower-right
+                    (self._pos[0]+1, self._pos[1]+1))   #lower-right
         
         elif self._color == "R":
             return ((self._pos[0]-1, self._pos[1]+1),   #upper-right
@@ -880,51 +913,110 @@ class Piece:
 
         elif self._color == "B":
             return ((self._pos[0]+1, self._pos[1]-1),   #lower-left
-                    (self._pos[0]+1, self._pos[1]+1))    #lower-right
+                    (self._pos[0]+1, self._pos[1]+1))   #lower-right
 
 
     def valid_jump(self, it_row, it_col, board):
-        '''Determines if a Piece in a cell can perform the targeted jump. '''
+        """
+        Determines if a Piece in a cell can perform the targeted jump.
+        @it_row: A 0-based index of a target position's row
+        @it_col: A 0-based index of a target position's col
+        @board: A 2D list that represents a gameboard
+        type it_row: int
+        type it_col: int
+        type board: list
+        return: True if a Piece can perform the targeted (it_row, it_col)
+                jump or False otherwise.
+        rtype: bool
+        """
         if self._is_king:
-            return ((self._jump_is_diagonal(self._pos[0]-2, self._pos[1]+2, it_row, it_col) and    #upper-right jump
-                    self._jumped_piece_is_opp(self._pos[0]-1, self._pos[1]+1, board)) or           #upper-right pos
-                    (self._jump_is_diagonal(self._pos[0]-2, self._pos[1]-2, it_row, it_col) and    #upper-left jump
-                    self._jumped_piece_is_opp(self._pos[0]-1, self._pos[1]-1, board)) or            #upper-left pos
-                    (self._jump_is_diagonal(self._pos[0]+2, self._pos[1]-2, it_row, it_col) and    #lower-left jump
-                    self._jumped_piece_is_opp(self._pos[0]+1, self._pos[1]-1, board)) or            #lower-left pos
-                    (self._jump_is_diagonal(self._pos[0]+2, self._pos[1]+2, it_row, it_col) and     #lower-right jump
-                    self._jumped_piece_is_opp(self._pos[0]+1, self._pos[1]+1, board)))              #lower-right pos
+            #(upper-right jump and upper-right pos) or (upper-left jump and upper-left pos)
+            #or (lower-left jump and lower-left pos) or (lower-right jump and lower-right pos)
+            return ((self._jump_is_diagonal(self._pos[0]-2, self._pos[1]+2, it_row, it_col) and\
+                    self._jumped_piece_is_opp(self._pos[0]-1, self._pos[1]+1, board)) or\
+                    (self._jump_is_diagonal(self._pos[0]-2, self._pos[1]-2, it_row, it_col) and\
+                    self._jumped_piece_is_opp(self._pos[0]-1, self._pos[1]-1, board)) or\
+                    (self._jump_is_diagonal(self._pos[0]+2, self._pos[1]-2, it_row, it_col) and\
+                    self._jumped_piece_is_opp(self._pos[0]+1, self._pos[1]-1, board)) or\
+                    (self._jump_is_diagonal(self._pos[0]+2, self._pos[1]+2, it_row, it_col) and\
+                    self._jumped_piece_is_opp(self._pos[0]+1, self._pos[1]+1, board)))
         elif self._color == "R":
-            return ((self._jump_is_diagonal(self._pos[0]-2, self._pos[1]+2, it_row, it_col) and
-                    self._jumped_piece_is_opp(self._pos[0]-1, self._pos[1]+1, board)) or
-                    (self._jump_is_diagonal(self._pos[0]-2, self._pos[1]-2, it_row, it_col) and
+            return ((self._jump_is_diagonal(self._pos[0]-2, self._pos[1]+2, it_row, it_col) and\
+                    self._jumped_piece_is_opp(self._pos[0]-1, self._pos[1]+1, board)) or\
+                    (self._jump_is_diagonal(self._pos[0]-2, self._pos[1]-2, it_row, it_col) and\
                     self._jumped_piece_is_opp(self._pos[0]-1, self._pos[1]-1, board)))
         elif self._color == "B":
-            return ((self._jump_is_diagonal(self._pos[0]+2, self._pos[1]-2, it_row, it_col) and  #lower-left jump
-                    self._jumped_piece_is_opp(self._pos[0]+1, self._pos[1]-1, board)) or
-                    (self._jump_is_diagonal(self._pos[0]+2, self._pos[1]+2, it_row, it_col) and  #lower right jump
+            return ((self._jump_is_diagonal(self._pos[0]+2, self._pos[1]-2, it_row, it_col) and\
+                    self._jumped_piece_is_opp(self._pos[0]+1, self._pos[1]-1, board)) or\
+                    (self._jump_is_diagonal(self._pos[0]+2, self._pos[1]+2, it_row, it_col) and\
                     self._jumped_piece_is_opp(self._pos[0]+1, self._pos[1]+1, board)))
         
 
-
     def _jump_is_diagonal(self, ip_row, ip_col, it_row, it_col):
-        '''Determines if the jump movement of a chosen piece is diagonal.'''
+        """
+        Determines if the jump movement of a chosen piece is diagonal
+        (in cases where a user may erroneously attempt a jump that
+        is not diagonal)
+        @ip_row: A 0-based index of a piece's starting row
+        @ip_col: A 0-based index of a piece's starting col
+        @it_row: A 0-based index of a target position's row
+        @it_col: A 0-based index of a target position's col
+        type ip_row: int
+        type ip_col: int
+        type it_row: int
+        type it_col: int
+        return: True if the jump movement of a Piece is diagonal
+                or False otherwise
+        rtype: bool
+        """
         return (it_row, it_col) == (ip_row, ip_col)
 
 
     def _jumped_piece_is_opp(self, ijp_row, ijp_col, board):
-        '''Determines if a piece that is jumped over belongs to the opponent.'''
+        """
+        Determines if a piece that is jumped over belongs to the opponent.
+        @ijp_row: A 0-based index row of a piece that is to be jumped
+        @ijp_col: A 0-based index row of a piece that is to be jumped
+        @board: A 2D list that represents a gameboard
+        type ijp_row: int
+        type ijp_col: int
+        type board: list
+        return: True if a piece that is jumped over belongs to the
+                opponent or False otherwise
+        rtype: bool
+        """
         return board[ijp_row][ijp_col] != " " and board[ijp_row][ijp_col].get_color() == self._opp
     
 
     def get_jumped_piece_coord(self, ip_row, ip_col, it_col, it_row):
-        '''Returns the (row, col) of a Piece that was just jumped.'''
+        """
+        Returns the (row, col) of a Piece that was just jumped.
+        @ip_row: A 0-based index of a piece's starting row
+        @ip_col: A 0-based index of a piece's starting col
+        @it_row: A 0-based index of a target position's row
+        @it_col: A 0-based index of a target position's col
+        type ip_row: int
+        type ip_col: int
+        type it_row: int
+        type it_col: int
+        return: The (row, col) of a Piece that was jumped
+        rtype: tuple
+        """
         return (int((ip_row+it_row)/2), int((ip_col+it_col)/2))
 
 
     def get_adj_opps(self, i_row, i_col, board):
-        '''Returns a list of all cells that are adjecent to the given cell and contain
-           an opposing piece.'''
+        """
+        Returns a list of all cells that are adjacent to the
+        given cell and contain an opposing piece.
+        @i_row: A 0-based row index of the current Piece's cell
+        @i_col: A 0-based col index of the current Piece's cell
+        type i_row: int
+        type i_col: int
+        return: A list of all cells that are adjacent to
+                the current Piece
+        rtype: [tuple]
+        """
         adj_opp_cells = []
         tr_cell = (0, len(board[0])-1) #No need for top LEFT cuz no piece is ever gonna be there
         bl_cell = (len(board)-1, 0) #No need for bottom RIGHT cuz no piece is ever gonna be there
@@ -965,20 +1057,56 @@ class Piece:
     
 
     def opp_piece(self):
-        '''Returns the opposite color of this Piece.'''
+        """
+        Returns the opposite color of this Piece.
+        return: The opposite color of this Piece ("B" or "R").
+                I.e., this Piece's opponent.
+        rtype: str
+        """
         return "B" if self._color=="R" else "R"
 
 
     def _adjacency_check(self, iadj_row, iadj_col, board, lst):
-        '''Determines if the given adjacent cell contains an opposing piece.'''
+        """
+        Determines if the given adjacent cell contains an opposing
+        piece and appends it to the provided list if True.
+        @iadj_row: A 0-based index of the adjacent cell's row
+        @iadj_col: A 0-based index of the adjacent cell's col
+        @board: A 2D list that represents a gameboard
+        @lst: The list to append the given adjacent cell to if
+              the adjacent cell contains an opposing piece.
+        type iadj_row: int
+        type iadj_col: int
+        type board: list
+        type lst: list
+        """
         if board[iadj_row][iadj_col] != " " and board[iadj_row][iadj_col].get_color() == self._opp:
             lst.append((iadj_row, iadj_col))
 
 
     def jump_is_possible(self, ip_row, ip_col, iadj_row, iadj_col, board):
-        '''Determines if a jump can be made given a piece's position and a position adjacent to it.'''
-        cand_targ_row = 2*iadj_row - ip_row  #Derived from the midpoint formula. Note how an empty space between two
-        cand_targ_col = 2*iadj_col - ip_col #other spaces A and B on the same diagonal is the midpoint between A and B.
+        """
+        Determines if a jump can be made given a Piece's position
+        and a position adjacent to it.
+        @ip_row: A 0-based index of a piece's starting row
+        @ip_col: A 0-based index of a piece's starting col
+        @iadj_row: A 0-based index of the adjacent cell's row
+        @iadj_col: A 0-based index of the adjacent cell's col
+        @board: A 2D list that represents a gameboard
+        type ip_row: int
+        type ip_col: int
+        type iadj_row: int
+        type iadj_col: int
+        type board: list
+        return: True if a jup can be made given a Piece's position
+                and a position adjacent to it or False otherwise.
+        rtype: bool
+        """
+        #The following is derived from the midpoint formula. Note how an empty
+        #space between two other spaces A and B on the same diagonal is the
+        #midpoint between A and B.
+        cand_targ_row = 2*iadj_row - ip_row
+        cand_targ_col = 2*iadj_col - ip_col
         
         #check if out of bounds...
         if not 0 <= cand_targ_row <= len(board)-1:
@@ -988,8 +1116,9 @@ class Piece:
 
         return board[cand_targ_row][cand_targ_col] == " "
 
-        
-                    
+
+
+
 if __name__ == "__main__":
     pass
 
