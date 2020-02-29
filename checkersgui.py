@@ -1,13 +1,26 @@
 #Contains the class for the checkerboard GUI.
-
 import tkinter, checkers, math, scoreboardgui, time, checkersai
 _INIT_CELL_WIDTH = 50
 _INIT_CELL_HEIGHT = 50
 
+
+
+
 class CheckersBoard:
 
-    def __init__(self, hum_player = "B", cpu_opp = "None", allow_forced_piece_hls=True):
-        '''Initializes the attributes of a Checkers GUI game.'''
+    def __init__(self, hum_player = "B", cpu_opp = None, allow_forced_piece_hls=True):
+        """
+        Initializes the attributes of a Checkers GUI game.
+        @hum_player: The color of the human player
+        @cpu_opp: The color of the CPU
+        @allow_forced_piece_hls: Indicates if pieces that are forced to
+                                 move should be highlighted
+        type hum_player: str
+        type cpu_opp: str
+        type allow_forced_piece_hls: bool
+        """
+        #TODO: Verify if cpu_opp == None indicates a test board
+        #TODO: Test allow_forced_piece_hls
         self._root = tkinter.Tk()
         self._root.configure(background="black")
         self._root.wm_title("Checkers")
@@ -56,19 +69,31 @@ class CheckersBoard:
 
 
     def start(self):
-        '''Runs the mainloop on the root window.'''
+        """
+        Runs the mainloop on the root window.
+        return: None
+        rtype: None
+        """
         self._root.mainloop()
 
 
     def _on_canvas_click(self, event):
-        '''An event handler that processes left mouse button clicks.'''
+        """
+        An event handler that processes left mouse button clicks.
+        @event: A ButtonPress event
+        type event: Event
+        return: None
+        rtype: None
+        """
         self._canvas.delete(self._cur_piece_id)
+        #TODO: Consider making midpoint_mappings an instance variable
+        #      so that you don't have to keep passing it around.
         midpoint_mappings = self._get_mappings(self._tl_br_corners, "midpoints")
         self._corner_mappings = self._get_mappings(self._tl_br_corners, "corners")
         #In Othello, this was an instance variable so that you didn't have to pass it around?
 
         if self._gamestate.get_winner() == None:
-            if self._cpu_opp == "None":
+            if self._cpu_opp == None:
                 self._player_move(event, midpoint_mappings)
             else:
                 if self._gamestate.get_turn() == self._hum_player:
@@ -80,9 +105,23 @@ class CheckersBoard:
 
 
     def _player_move(self, event, midpoint_mappings):
-        '''Executes a human player's move.'''
-        self._invalid_move_made = False #False for now. If you put this after the try/except block,
+        """
+        Executes a human player's move.
+        @event: A ButtonPress event
+        @midpoint_mappings: A dictionary whose keys are all
+                            of the board's cell positions
+                            and whose values are midpoints
+                            between the top-left and bottom-
+                            right of a cell.
+        type event: Event
+        type midpoint_mappings: dict 
+        return: None
+        rtype: None
+        """        
+        self._invalid_move_made = False
+        #Make this^ False for now. If you put this after the try/except block,
         #then the invalid move indication wouldn't show up on the scoreboard GUI!
+
         if not self._cell_chosen_yet:
             self._highlight_clicked_piece(event, midpoint_mappings)
         else:
@@ -93,9 +132,20 @@ class CheckersBoard:
             #The code in _update_GUI board was originally exclusively in this function in this section
 
 
-    #FOCUS HERE
     def _cpu_move(self, event, midpoint_mappings):
-        '''Executes a CPU player's move.'''        
+        """
+        Executes a CPU player's move.
+        @event: A ButtonPress event
+        @midpoint_mappings: A dictionary whose keys are all
+                            of the board's square positions
+                            and whose values are midpoints
+                            between the top-left and bottom-
+                            right of a cell.
+        type event: Event
+        type midpoint_mappings: dict 
+        return: None
+        rtype: None
+        """
         while (self._gamestate.get_turn() == self._cpu_player
                and self._gamestate.get_winner() == None):
             if self._cpu_opp == "Random Randy":
@@ -131,7 +181,23 @@ class CheckersBoard:
 
 
     def _try_move(self, event, midpoint_mappings, for_cpu=False, cpu_row_col=None):
-        '''Tries to perform a move executed by a player.'''
+        """
+        Tries to perform a move executed by a player.
+        @event: A ButtonPress event
+        @midpoint_mappings: A dictionary whose keys are all
+                            of the board's cell positions
+                            and whose values are midpoints
+                            between the top-left and bottom-
+                            right of a cell.
+        @for_cpu: Indicates if the moved being attempted is for the CPI
+        @cpu_row_col: The (row, col) position of the CPU
+        type event: Event
+        type midpoint_mappings: dict
+        for_cpu: bool
+        cpu_row_col: tuple, None
+        return: None
+        rtype: None
+        """
         self._targ_pos = cpu_row_col if for_cpu else self._find_nearest_cell(event, midpoint_mappings)
         i_row, i_col = self._chosen_cell[0], self._chosen_cell[1]
         
@@ -155,7 +221,11 @@ class CheckersBoard:
 
 
     def _update_GUI_board(self):
-        '''Updates the graphical representation of the checkers board.'''        
+        """
+        Updates the graphical representation of the checkers board.
+        return: None
+        rtype: None
+        """
         self._cell_chosen_yet = False
         self._chosen_cell = None 
         self._draw_board()
@@ -166,7 +236,23 @@ class CheckersBoard:
 
 
     def _highlight_clicked_piece(self, event, midpoint_mappings, for_cpu=False, cpu_row_col=None):
-        '''Highlights the piece clicked on by the player.'''
+        """
+        Highlights the piece clicked on by the player.
+        @event: A ButtonPress event
+        @midpoint_mappings: A dictionary whose keys are all
+                            of the board's square positions
+                            and whose values are midpoints
+                            between the top-left and bottom-
+                            right of a square.
+        @for_cpu: Indicates if the moved being attempted is for the CPI
+        @cpu_row_col: The (row, col) position of the CPU
+        type event: Event
+        type midpoint_mappings: dict
+        for_cpu: bool
+        cpu_row_col: tuple, None
+        return: None
+        rtype: None
+        """
         if for_cpu:
             self._chosen_cell = cpu_row_col
             i_row, i_col = cpu_row_col[0], cpu_row_col[1]
@@ -179,25 +265,39 @@ class CheckersBoard:
 
         
     def _on_canvas_resize(self, event):
-        '''An event handler that processes window resizes.'''
+        """
+        An event handler that processes window resizes.
+        @event: A Configure event
+        type event: Event
+        return: None
+        rtype: None
+        """
         self._draw_board()
 
 
     def _draw_board(self):
-        '''Draws the board and piece arrangements corresponding to a Checkers game state.'''
+        """
+        Draws the board and piece arrangements
+        corresponding to a Checkers game state.
+        return: None
+        rtype: None
+        """
         self._canvas.delete(tkinter.ALL)
         width = self._canvas.winfo_width()
         height = self._canvas.winfo_height()
         delta_x, delta_y = 0, 0
         row, col = 0, 0
-        self._tl_br_corners = [] #Reset this to the empty list every time you redraw the board
-        
+
+        #IMPORTANT: Reset _tl_br_corners to the empty
+        #list every time you redraw the board:
+        self._tl_br_corners = []
+
         #DRAW THE SQUARES
         self._draw_squares(row, col, delta_x, delta_y, width, height)
         new_corner_mappings = self._get_mappings(self._tl_br_corners, "corners") #For drawing the pieces
         #^Note how it's this new_corner_mappings that allows any element on the canvas to resize along
-        #with the window!!
-        
+        # with the window!!
+
         #DRAW THE PIECES
         self._draw_pieces(new_corner_mappings)
 
@@ -207,15 +307,26 @@ class CheckersBoard:
             self._cur_piece_id = self._draw_selection_highlight(new_corner_mappings)
             i_row, i_col = self._chosen_cell[0], self._chosen_cell[1]
             self._draw_piece_in_cell(i_row, i_col, new_corner_mappings)
-            
 
-        if self._cpu_opp == "None" and self._allow_forced_piece_hls:
+        if self._cpu_opp == None and self._allow_forced_piece_hls:
             self._check_forced_piece_highlights(new_corner_mappings)
         
 
     def _check_forced_piece_highlights(self, corner_mappings):
-        '''Determines if any highlights need to be made to indicate pieces that must be moved.'''
-        if self._gamestate.need_to_move_again() and self._gamestate.get_winner() == None:  #Combo jump situation
+        """
+        Determines if any highlights need to be made to indicate pieces that must be moved.
+        @corner_mappings: A dictionary whose keys are all
+                          of the board's cell positions
+                          and whose values are the top-left
+                          and bottom-right corners of a cell.
+        type corner_mappings: dict
+        return: None
+        rtype: None
+        """
+        #TODO: Use the corner_mappings instance variable instead of a passed corner_mappings
+        
+        #Combo jump situation:
+        if self._gamestate.need_to_move_again() and self._gamestate.get_winner() == None:
             #highlight the piece that needs to move again.
             self._canvas.delete(self._must_move_cell_id)
             #^I don't think deleting makes any difference visually since you're always redrawing,
@@ -239,25 +350,68 @@ class CheckersBoard:
 
 
     def _draw_selection_highlight(self, corner_mappings):
-        '''Draws the highlighted cell corresponding to the one selected by the player.'''
+        """
+        Draws the highlighted cell corresponding to the one selected by the player.
+        @corner_mappings: A dictionary whose keys are all
+                          of the board's cell positions
+                          and whose values are the top-left
+                          and bottom-right corners of a cell.
+        type corner_mappings: dict
+        return: None
+        rtype: None
+        """        
         return self._canvas.create_rectangle(corner_mappings[self._chosen_cell][0][0],
-                                              corner_mappings[self._chosen_cell][0][1],
-                                              corner_mappings[self._chosen_cell][1][0],
-                                              corner_mappings[self._chosen_cell][1][1],
-                                              outline="yellow", fill = "lightblue", width=4)
+                                             corner_mappings[self._chosen_cell][0][1],
+                                             corner_mappings[self._chosen_cell][1][0],
+                                             corner_mappings[self._chosen_cell][1][1],
+                                             outline="yellow", fill = "lightblue", width=4)
 
 
     def _draw_forced_piece_highlight(self, corner_mappings, i_row, i_col):
-        '''Draws the highlighted cell corresponding to a piece that must be moved.'''
+        """
+        Draws the highlighted cell corresponding to a piece that must be moved.
+        @corner_mappings: A dictionary whose keys are all
+                          of the board's cell positions
+                          and whose values are the top-left
+                          and bottom-right corners of a cell.
+        @i_row: A 0-based index for a row
+        @i_col: A 0-based index for a col
+        type i_row: int
+        type i_col: int
+        type corner_mappings: dict
+        return: The item ID of the rectangle representing the highlight
+        rtype: int
+        """
+        #TODO: Determine if making a return statement is really necessary
         return self._canvas.create_rectangle(corner_mappings[(i_row, i_col)][0][0],
-                                              corner_mappings[(i_row, i_col)][0][1],
-                                              corner_mappings[(i_row, i_col)][1][0],
-                                              corner_mappings[(i_row, i_col)][1][1],
-                                              outline="yellow", fill="green", width=3)
+                                             corner_mappings[(i_row, i_col)][0][1],
+                                             corner_mappings[(i_row, i_col)][1][0],
+                                             corner_mappings[(i_row, i_col)][1][1],
+                                             outline="yellow", fill="green", width=3)
 
 
     def _draw_squares(self, row, col, delta_x, delta_y, width, height):
-        '''Draws the squares on the board.'''
+        """
+        Draws the squares on the board.
+        @row: A 0-based index of a board's row
+        @col: A 0-based index of a board's col
+        @delta_x: The step length to take when drawing the next column
+        @delta_y: The step length to take when drawing the next row
+        @width: The width of the game window
+        @height: The height of the game window
+        type row: int
+        type col: int
+        type delta_x: float 
+        type delta_y: float
+        type width: float
+        type height: float
+        return: None
+        rtype: None
+        """
+        #TODO: Determine if passing args to this function is really necessary.
+        #      These values seem to only be initialized before this function
+        #      is called and are only defined specifically for this function.
+        #      Might be able to just initialize those values here.
         for i in range(self._num_rows):
             delta_x = 0 #set x to 0 to restart on the leftmost side of the board
             col = 0
@@ -278,10 +432,27 @@ class CheckersBoard:
 
 
     def _get_mappings(self, corners, mode):
-        '''Takes a list of the top left and bottom right corners of all the squares on the
-           board and maps these corners to their corresponding (i,j)th cell (if mode is "corners")
-           or maps the midpoint between these corners to the corresponding (i,j)th cell (if mode is
-           "midpoints"). The mapping is represented as a dictionary.'''
+        """
+        Takes a list of the top-left and bottom-right corners of all the cells on
+        the board and maps these corners (if mode is "corners") to their corresponding
+        (i,j)th cell OR maps the midpoint (if mode is "midpoints") between these
+        corners to the corresponding (i,j)th cell (if mode is "midpoints"). The
+        mapping is represented as a dictionary.
+        @corners: A list of all the top-left and bottom-right corners
+                  of a board's cells
+        @mode: String value ("corners" or "midpoints") that determines whether
+               to map a board's (i, j)th cell to the top-left and bottom-right
+               corners or the midpoints of these corners.
+        type corners: list
+        type mode: str
+        return: A dictionary whose keys are the (i, j)th cells of the board and
+                whose values are:
+                    * If mode is "corners": tuples representing the associated
+                      top-left and bottom-right corners
+                    * If mode is "midpoints": The midpoint between the associated
+                      top-left and bottom-right corners.
+        rtype: dict
+        """
         mappings = dict() #recall that dictionaries are not ordered!!!!
         k = 0
         for i in range(self._num_rows):
@@ -297,14 +468,37 @@ class CheckersBoard:
 
 
     def _draw_pieces(self, corner_mappings):
-        '''Takes a mapping of cell positions to top left and bottom right corners and draws pieces
-           according to how they are arranged for a particular gamestate.'''
+        """
+        Takes a mapping of cell positions to top left and bottom
+        right corners and draws pieces.
+        according to how they are arranged for a particular gamestate.
+        @corner_mappings: A dictionary whose keys are all
+                          of the board's cell positions
+                          and whose values are the top-left
+                          and bottom-right corners of a cell.
+        type corner_mappings: dict
+        return: None
+        rtype: None
+        """
         for (i, j) in corner_mappings:
             self._draw_piece_in_cell(i, j, corner_mappings)            
 
 
     def _draw_piece_in_cell(self, i_row, i_col, corner_mappings):
-        '''Draws the piece within a particular cell.'''
+        """
+        Draws the piece within a particular cell.
+        @i_row: A 0-based index for a row
+        @i_col: A 0-based index for a col
+        @corner_mappings: A dictionary whose keys are all
+                          of the board's cell positions
+                          and whose values are the top-left
+                          and bottom-right corners of a cell.
+        type i_row: int
+        type i_col: int
+        corner_mappings: dict
+        return: None
+        rtype: None
+        """
         oval_coords = (corner_mappings[(i_row,i_col)][0][0]+6,
                        corner_mappings[(i_row,i_col)][0][1]+6,
                        corner_mappings[(i_row,i_col)][1][0]-6,
@@ -324,8 +518,25 @@ class CheckersBoard:
 
 
     def _draw_crown(self, tlx, tly, brx, bry):
-        '''Takes the corner coordinates of an oval's bounding box and draws a crown inside
-           the oval (which represents a checkers piece).'''
+        """
+        Takes the corner coordinates of an oval's bounding box
+        and draws a crown inside the oval (which represents a
+        checkers piece).
+        @tlx: The x-coorindate of the top-left corner of
+              an oval's bounding box.
+        @tly: The y-coorindate of the top-left corner of
+              an oval's bounding box.
+        @brx: The x-coorindate of the bottom-right corner of
+              an oval's bounding box.
+        @bry: The y-coorindate of the bottom-right corner of
+              an oval's bounding box.
+        type tlx: float
+        type tly: float
+        type brx: float
+        type bry: float
+        return: None
+        rtype: None
+        """
         self._canvas.create_polygon([tlx+0.20*(brx-tlx), tly+0.80*(bry-tly),
                                      tlx+0.80*(brx-tlx), tly+0.80*(bry-tly),
                                      tlx+0.80*(brx-tlx), tly+0.20*(bry-tly),
@@ -341,7 +552,20 @@ class CheckersBoard:
 
 
     def _find_nearest_cell(self, event, midpoint_mappings):
-        '''Finds the nearest cell to a mouse click made on the game board.'''
+        """
+        Finds the nearest cell to a mouse click made on the game board.
+        @event: A ButtonPress event
+        @midpoint_mappings: A dictionary whose keys are all
+                            of the board's square positions
+                            and whose values are midpoints
+                            between the top-left and bottom-
+                            right of a square.
+        type event: Event
+        type midpoint_mappings: dict
+        return: A tuple representing the (i, j)th cell nearest
+                to a mouse click on the game board.
+        rtype: tuple
+        """
         min_dist = float("inf")
         nearest_cell = (0, 0)
         for item in midpoint_mappings.items():
@@ -357,7 +581,7 @@ class CheckersBoard:
 #For testing
 if __name__ == "__main__":
     #b = CheckersBoard(cpu_opp="Random Randy")
-    b = CheckersBoard(cpu_opp="Random Randy", allow_forced_piece_hls=False)
-    #b = CheckersBoard(cpu_opp="Mini Max", allow_forced_piece_hls=False)
+    #b = CheckersBoard(cpu_opp="Random Randy", allow_forced_piece_hls=False)
+    b = CheckersBoard(cpu_opp="Mini Max", allow_forced_piece_hls=False)
 
     b.start()

@@ -1,10 +1,12 @@
 #Contains the classes that represent the AIs for the game (at the
 #moment, only random_randy is working properly).
-
 import checkers, random
 
 #For your AIs, try to focus on returning moves only. Leave the
 #process of how the move changes the gamestate to the GUI code.
+
+
+
 
 def random_randy(gs, cpu_color):
     """
@@ -44,7 +46,6 @@ def minimax(gamestate, cpu_color, depth):
     type cpu_color: str
     type depth: int
     """
-
     print("\n\n")
     print("IN minimax")
     print(depth)
@@ -124,7 +125,15 @@ def minimax(gamestate, cpu_color, depth):
 
 #TODO: Implement a stronger evaluation function
 def minimax_eval(gamestate, cpu_color):
-    '''The evaluation function of a minimax algorithm.'''
+    """
+    The evaluation function for a Chceckers minimax AI.
+    @gamestate: A Checkers game state to evaluate
+    @cpu_color: The color of the CPU ("B" or "G")
+    type gamestate: Checkers
+    type cpu_color: str
+    return: A score for the given gamestate
+    rtype: int
+    """
     score = 0
     score += gamestate.get_red_count() - gamestate.get_black_count() if cpu_color == "R" else\
              gamestate.get_black_count() - gamestate.get_red_count()
