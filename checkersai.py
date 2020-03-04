@@ -54,7 +54,7 @@ def minimax(gamestate, cpu_color, depth):
 
     #TODO: Verify proper traversal of minimax tree
     # - PROTIP: print the board during the minimax traversal!
-    gamestate.print_test()
+    #gamestate.print_board()
     if gamestate.get_turn() == cpu_color:
         print("MAXIMIZING PLAYER'S TURN")
         best_val = float("-inf")

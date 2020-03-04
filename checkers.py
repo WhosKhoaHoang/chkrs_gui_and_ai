@@ -169,18 +169,17 @@ class Checkers:
         return board
 
 
-    #TODO: This method doesn't actually print the pieces
-    #      on the board! Make it print the pieces!!!
-    def print_test(self):
+    def print_board(self):
         """
         Prints a board for testing on the console.
         return: None
         rtype: None
         """
-        for row in self._test_board:
+        for row in self._board:
             print("")
             for col in row:
                 print(".", end=" ") if col == " " else print(col.get_color(), end=" ")
+        print() 
 
 
     def get_row_num(self):
