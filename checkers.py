@@ -169,6 +169,8 @@ class Checkers:
         return board
 
 
+    #TODO: This method doesn't actually print the pieces
+    #      on the board! Make it print the pieces!!!
     def print_test(self):
         """
         Prints a board for testing on the console.

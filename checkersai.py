@@ -47,44 +47,47 @@ def minimax(gamestate, cpu_color, depth):
     type depth: int
     """
     best_move = None    
-    player_color = "B" if cpu_color == "R" else "R"
 
     #Base case of Mini Max
     if depth == 0 or gamestate.get_winner() != None:
         return (minimax_eval(gamestate, cpu_color), None)
 
+    #TODO: Verify proper traversal of minimax tree
+    # - PROTIP: print the board during the minimax traversal!
+    gamestate.print_test()
     if gamestate.get_turn() == cpu_color:
         print("MAXIMIZING PLAYER'S TURN")
         best_val = float("-inf")
-        valid_moves = gamestate._valid_moves_exist(cpu_color, check_for_cpu=True)
+        valid_moves = gamestate._valid_moves_exist(
+                        gamestate.get_turn(), check_for_cpu=True)
 
         for move in valid_moves:
             #move is a 4-tuple: (start_row, start_col, target_row, target_col)
             dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
-                                           init_turn = cpu_color)
+                                           init_turn = gamestate.get_turn())
 
+            #NOTE: make_move() will switch turns
             dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
             (val, move_made) = minimax(dummy_game, cpu_color, depth-1)
             if val > best_val:
-                best_move = move
-                best_val = val
+                best_move, best_val = move, val
 
         return (best_val, best_move)
 
     else: #If it's the minimizing player's turn to move...
         print("MINIMIZING PLAYER'S TURN")
         best_val = float("inf")
-        valid_moves = gamestate._valid_moves_exist(player_color, check_for_cpu=True)
+        valid_moves = gamestate._valid_moves_exist(
+                        gamestate.get_turn(), check_for_cpu=True)
 
         for move in valid_moves:
             dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
-                                           init_turn = player_color)
+                                           init_turn = gamestate.get_turn())
 
             dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
             (val, move_made) = minimax(dummy_game, cpu_color, depth-1)
             if val < best_val:
-                best_move = move
-                best_val = val
+                best_move, best_val = move, val
 
         return (best_val, best_move)
 
