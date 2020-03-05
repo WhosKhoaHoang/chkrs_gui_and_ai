@@ -171,12 +171,14 @@ class CheckersBoard:
                 self._highlight_clicked_piece(event, midpoint_mappings, for_cpu=True,
                                               cpu_row_col = (move_made[0], move_made[1]))
                 self._root.update()
+
                 time.sleep(0.5) #To give time for human to see what move was selected.
                 self._try_move(event, midpoint_mappings, for_cpu=True,
                                cpu_row_col = (move_made[2], move_made[3]))
 
-            else: #If a move does exist...
+            else: #If a move does not exist...
                 #Switch turns?
+                #TODO: Consider if this block is really necessary
                 pass
 
 
@@ -323,8 +325,8 @@ class CheckersBoard:
         return: None
         rtype: None
         """
-        #TODO: Use the corner_mappings instance variable instead of a passed corner_mappings
-        
+        #TODO: Use the corner_mappings instance variable instead of a passed corner_mappings?
+
         #Combo jump situation:
         if self._gamestate.need_to_move_again() and self._gamestate.get_winner() == None:
             #highlight the piece that needs to move again.

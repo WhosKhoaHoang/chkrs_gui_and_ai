@@ -7,7 +7,9 @@ import checkers, random
 
 
 
-
+#TODO: The GameOverException isn't being thrown when the human
+#      player's piece count reaches 0 and the game stops responding
+#      if the CPU player's piece count reaches 0. FIX THIS.
 def random_randy(gs, cpu_color):
     """
     Function representing an AI that performs random moves. Takes a
@@ -32,7 +34,8 @@ def random_randy(gs, cpu_color):
 
 
 
-
+#TODO: I suspect that the GameOverException is being
+#      raised within the MiniMax tree traversel. FIX THIS.
 def minimax(gamestate, cpu_color, depth):
     """
     Executes a cpu move based on a depth-limited minimax algorithm.
@@ -89,7 +92,7 @@ def minimax(gamestate, cpu_color, depth):
 
     else: #If it's the minimizing player's turn to move...
         node_type = "min"
-        print("AT v_MIN_v NODE ({})".format(gamestate.get_turn()))
+        print("AT v_MIN_v NODE KHOA ({})".format(gamestate.get_turn()))
         print("CURRENT BOARD CONFIG (depth: {}):".format(depth), end="")
         gamestate.print_board()
 
@@ -117,7 +120,8 @@ def minimax(gamestate, cpu_color, depth):
 
 
 
-
+#TODO: I suspect that the GameOverException is being
+#      raised within the MiniMax tree traversel. FIX THIS.
 def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
     """
     Executes a cpu move based on a depth-limited minimax

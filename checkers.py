@@ -274,11 +274,13 @@ class Checkers:
         ip_row, ip_col = p_row-1, p_col-1   
         it_row, it_col = t_row-1, t_col-1
 
+        #THINK: If an exception is thrown in _check_if_valid_piece, nothing
+        #       else in this method will be executed...
         self._check_if_valid_piece(ip_row, ip_col)
         jumped_piece, move_type = self._check_if_valid_move(ip_row, ip_col, it_row, it_col)
         #If all of ^those^ checks pass, then go ahead and update the gamestate's board.
 
-        self._relocate_piece(ip_row, ip_col, it_row, it_col, jumped_piece)         
+        self._relocate_piece(ip_row, ip_col, it_row, it_col, jumped_piece)        
         self._check_if_need_to_king(it_row, it_col)
         
         #Check if opponent has any valid moves left
@@ -323,7 +325,7 @@ class Checkers:
                 if self._board[it_row][it_col].jump_is_possible(
                     it_row, it_col, cell[0], cell[1], self._board):
                     self._forced_jumps.append((2*cell[0]-it_row, 2*cell[1]-it_col))
-                    
+
 
     def _check_if_opp_forced_to_move(self):
         """
@@ -341,12 +343,12 @@ class Checkers:
                         if self._board[i][j].jump_is_possible(i, j, cell[0], cell[1], self._board):
                             self._opp_forced_jumps.append((2*cell[0]-i, 2*cell[1]-j))
                             self._opp_forced_pieces.append((i, j))
-        
+
         if self._opp_forced_jumps != []: #There are jumps opponent can make on next turn...
             self._opp_forced = True
         else:
             self._opp_forced = False
-            
+
 
     def _check_if_opp_can_move(self):
         """
@@ -633,33 +635,38 @@ class Checkers:
                 out for. If check_for_cpu is True, then a list of valid moves
                 is returned (used in implementing the AI).
         """
-        valid_moves = []
-        tr_cell = (0, len(self._board[0])-1) #No need for top LEFT cuz no piece is ever gonna be there
-        bl_cell = (len(self._board)-1, 0) #No need for bottom RIGHT cuz no piece is ever gonna be there
-        ls_cells = [(c, 0) for c in range(1, len(self._board)-2, 2)] 
-        rs_cells = [(c, len(self._board[0])-1) for c in range(2, len(self._board)-1, 2)] 
-        ts_cells = [(0, c) for c in range(1, len(self._board[0])-1, 2)] 
-        bs_cells = [(len(self._board)-1, c) for c in range(2, len(self._board[0])-1, 2)]
+        valid_moves = []        
+        if not self._opp_forced:
+            tr_cell = (0, len(self._board[0])-1) #No need for top LEFT cuz no piece is ever gonna be there
+            bl_cell = (len(self._board)-1, 0) #No need for bottom RIGHT cuz no piece is ever gonna be there
+            ls_cells = [(c, 0) for c in range(1, len(self._board)-2, 2)] 
+            rs_cells = [(c, len(self._board[0])-1) for c in range(2, len(self._board)-1, 2)] 
+            ts_cells = [(0, c) for c in range(1, len(self._board[0])-1, 2)] 
+            bs_cells = [(len(self._board)-1, c) for c in range(2, len(self._board[0])-1, 2)]
 
-        #Loop through each of the cells. If there's a piece there, see if it can do a jump or a
-        #step (with self._check_if_valid_move)
-        for i_row in range(self._num_rows):
-            for i_col in range(self._num_cols):
-                piece = self._board[i_row][i_col]
-                if piece != " " and piece.get_color() == turn and (i_row, i_col) == tr_cell:
-                    self._check_moves_in_tr_cell(i_row, i_col, valid_moves)                    
-                elif piece != " " and piece.get_color() == turn and (i_row, i_col) == bl_cell:
-                    self._check_moves_in_bl_cell(i_row, i_col, valid_moves)                    
-                elif piece != " " and piece.get_color() == turn and (i_row, i_col) in ls_cells:
-                    self._check_moves_in_ls_cells(i_row, i_col, valid_moves, turn, piece.piece_is_king())                    
-                elif piece != " " and piece.get_color() == turn and (i_row, i_col) in rs_cells:
-                    self._check_moves_in_rs_cells(i_row, i_col, valid_moves, turn, piece.piece_is_king())                
-                elif piece != " " and piece.get_color() == turn and (i_row, i_col) in ts_cells:
-                    self._check_moves_in_ts_cells(i_row, i_col, valid_moves, turn)                    
-                elif piece != " " and piece.get_color() == turn and (i_row, i_col) in bs_cells:
-                    self._check_moves_in_bs_cells(i_row, i_col, valid_moves, turn)                    
-                elif piece != " " and piece.get_color() == turn:
-                    self._check_moves_in_nb_cells(i_row, i_col, valid_moves, turn, piece.piece_is_king())
+            #Loop through each of the cells. If there's a piece there, see if it can do a jump or a
+            #step (with self._check_if_valid_move)
+            for i_row in range(self._num_rows):
+                for i_col in range(self._num_cols):
+                    piece = self._board[i_row][i_col]
+                    if piece != " " and piece.get_color() == turn and (i_row, i_col) == tr_cell:
+                        self._check_moves_in_tr_cell(i_row, i_col, valid_moves)                    
+                    elif piece != " " and piece.get_color() == turn and (i_row, i_col) == bl_cell:
+                        self._check_moves_in_bl_cell(i_row, i_col, valid_moves)                    
+                    elif piece != " " and piece.get_color() == turn and (i_row, i_col) in ls_cells:
+                        self._check_moves_in_ls_cells(i_row, i_col, valid_moves, turn, piece.piece_is_king())                    
+                    elif piece != " " and piece.get_color() == turn and (i_row, i_col) in rs_cells:
+                        self._check_moves_in_rs_cells(i_row, i_col, valid_moves, turn, piece.piece_is_king())                
+                    elif piece != " " and piece.get_color() == turn and (i_row, i_col) in ts_cells:
+                        self._check_moves_in_ts_cells(i_row, i_col, valid_moves, turn)                    
+                    elif piece != " " and piece.get_color() == turn and (i_row, i_col) in bs_cells:
+                        self._check_moves_in_bs_cells(i_row, i_col, valid_moves, turn)                    
+                    elif piece != " " and piece.get_color() == turn:
+                        self._check_moves_in_nb_cells(i_row, i_col, valid_moves, turn, piece.piece_is_king())
+        else:
+            #NOTE: In checkers, IT'S REQUIRED that you make a jump if a jump is available.
+            for i in range(len(self._opp_forced_pieces)):
+                valid_moves.append(self._opp_forced_pieces[i]+self._opp_forced_jumps[i]+("jump",))
 
         return (valid_moves != [], turn) if not check_for_cpu else valid_moves
 
