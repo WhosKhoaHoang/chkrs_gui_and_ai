@@ -47,16 +47,25 @@ def minimax(gamestate, cpu_color, depth):
     type depth: int
     """
     best_move = None    
+    node_type = ""
 
     #Base case of Mini Max
     if depth == 0 or gamestate.get_winner() != None:
+        node_type = "terminal"
+        print("TERMINAL NODE REACHED (depth: {})".format(depth))
+        print("EVALUATING THIS BOARD:")
+        gamestate.print_board()
+        print("**********")
+        print("GOING BACK UP FROM {} NODE\n".format(node_type))
+
         return (minimax_eval(gamestate, cpu_color), None)
 
-    #TODO: Verify proper traversal of minimax tree
-    # - PROTIP: print the board during the minimax traversal!
-    #gamestate.print_board()
     if gamestate.get_turn() == cpu_color:
-        print("MAXIMIZING PLAYER'S TURN")
+        node_type = "max"
+        print("AT ^_MAX_^ NODE ({})".format(gamestate.get_turn()))
+        print("CURRENT BOARD CONFIG (depth: {}):".format(depth), end="")
+        gamestate.print_board()
+
         best_val = float("-inf")
         valid_moves = gamestate._valid_moves_exist(
                         gamestate.get_turn(), check_for_cpu=True)
@@ -68,14 +77,22 @@ def minimax(gamestate, cpu_color, depth):
 
             #NOTE: make_move() will switch turns
             dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            print("MOVE MADE BY ^_MAX_^ NODE ({}, depth: {}):".\
+                  format(gamestate.get_turn(), depth))
+            print((move[0]+1, move[1]+1), (move[2]+1, move[3]+1))
+            dummy_game.print_board() #FOR TESTING
+            print("")
+
             (val, move_made) = minimax(dummy_game, cpu_color, depth-1)
             if val > best_val:
                 best_move, best_val = move, val
 
-        return (best_val, best_move)
-
     else: #If it's the minimizing player's turn to move...
-        print("MINIMIZING PLAYER'S TURN")
+        node_type = "min"
+        print("AT v_MIN_v NODE ({})".format(gamestate.get_turn()))
+        print("CURRENT BOARD CONFIG (depth: {}):".format(depth), end="")
+        gamestate.print_board()
+
         best_val = float("inf")
         valid_moves = gamestate._valid_moves_exist(
                         gamestate.get_turn(), check_for_cpu=True)
@@ -85,11 +102,130 @@ def minimax(gamestate, cpu_color, depth):
                                            init_turn = gamestate.get_turn())
 
             dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            print("MOVE MADE BY v_MIN_v NODE ({}, depth: {}):".\
+                  format(gamestate.get_turn(), depth))
+            print((move[0]+1, move[1]+1), (move[2]+1, move[3]+1))
+            dummy_game.print_board()
+            print("")
+
             (val, move_made) = minimax(dummy_game, cpu_color, depth-1)
             if val < best_val:
                 best_move, best_val = move, val
 
-        return (best_val, best_move)
+    print("GOING BACK UP FROM {} NODE\n".format(node_type))
+    return (best_val, best_move)
+
+
+
+
+def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
+    """
+    Executes a cpu move based on a depth-limited minimax
+    algorithm with alpha-beta pruning.
+    @gamestate: The game state of a checkers match. The game state is
+                altered as the minimax search progresses down the tree
+                of possible move outcomes.
+    @cpu_color: The color of the CPU
+    @depth: An int indicating how deep to traverse down the tree of
+            possible move outcomes
+    @alpha: The maximum lower bound for an AB-prune
+    @beta: The minimum upper bound for an AB-prune
+    type gamestate: Checkers
+    type cpu_color: str
+    type depth: int
+    type alpha: float
+    type beta: float
+    return: A tuple whose first component is a utility value and
+            whose second component is the the move associated with
+            that utility value
+    rtype: tuple
+    """
+    best_move = None    
+    node_type = ""
+
+    print("ALPHA-BETA PRUNING IN EFFECT")
+
+    #Base case of Mini Max
+    if depth == 0 or gamestate.get_winner() != None:
+        node_type = "terminal"
+        print("TERMINAL NODE REACHED (depth: {})".format(depth))
+        print("EVALUATING THIS BOARD:")
+        gamestate.print_board()
+        print("**********")
+        print("GOING BACK UP FROM {} NODE\n".format(node_type))
+
+        return (minimax_eval(gamestate, cpu_color), None)
+
+    if gamestate.get_turn() == cpu_color:
+        node_type = "max"
+        print("AT ^_MAX_^ NODE ({})".format(gamestate.get_turn()))
+        print("CURRENT BOARD CONFIG (depth: {}):".format(depth), end="")
+        gamestate.print_board()
+
+        best_val = float("-inf")
+        valid_moves = gamestate._valid_moves_exist(
+                        gamestate.get_turn(), check_for_cpu=True)
+
+        for move in valid_moves:
+            #move is a 4-tuple: (start_row, start_col, target_row, target_col)
+            dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
+                                           init_turn = gamestate.get_turn())
+
+            #NOTE: make_move() will switch turns
+            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            print("MOVE MADE BY ^_MAX_^ NODE ({}, depth: {}):".\
+                  format(gamestate.get_turn(), depth))
+            print((move[0]+1, move[1]+1), (move[2]+1, move[3]+1))
+            dummy_game.print_board() #FOR TESTING
+            print("")
+
+            (val, move_made) = minimax_abp(dummy_game,
+                                cpu_color, depth-1, alpha, beta)
+            if val > best_val:
+                best_move, best_val = move, val
+
+            if best_val > alpha:
+                alpha = best_val
+
+            if beta <= alpha:
+                print("PRUNING!!!")
+                break
+
+    else:
+        node_type = "min"
+        print("AT v_MIN_v NODE ({})".format(gamestate.get_turn()))
+        print("CURRENT BOARD CONFIG (depth: {}):".format(depth), end="")
+        gamestate.print_board()
+
+        best_val = float("inf")
+        valid_moves = gamestate._valid_moves_exist(
+                        gamestate.get_turn(), check_for_cpu=True)
+
+        for move in valid_moves:
+            dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
+                                           init_turn = gamestate.get_turn())
+
+            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            print("MOVE MADE BY v_MIN_v NODE ({}, depth: {}):".\
+                  format(gamestate.get_turn(), depth))
+            print((move[0]+1, move[1]+1), (move[2]+1, move[3]+1))
+            dummy_game.print_board()
+            print("")
+
+            (val, move_made) = minimax_abp(dummy_game,
+                                cpu_color, depth-1, alpha, beta)
+            if val < best_val:
+                best_move, best_val = move, val
+
+            if best_val < beta:
+                beta = best_val
+
+            if beta <= alpha:
+                print("xxxxxPRUNINGxxxxx!!!")
+                break
+
+    print("GOING BACK UP FROM {} NODE\n".format(node_type))
+    return (best_val, best_move)
 
 
 

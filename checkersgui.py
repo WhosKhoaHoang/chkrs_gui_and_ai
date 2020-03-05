@@ -154,15 +154,15 @@ class CheckersBoard:
                 print("Move that was made:")
                 print(move_made)
             elif self._cpu_opp == "Mini Max":
-                
                 print("\n\n")
                 print("IN Mini Max BLOCK")
                 print(self._gamestate)
                 print(self._hum_player)
                 print("\n\n")
 
-                #move_made = checkersai.minimax(self._gamestate, self._cpu_player, 3)
-                move_made = checkersai.minimax(self._gamestate, self._cpu_player, 3)[1]
+                #move_made = checkersai.minimax(self._gamestate, self._cpu_player, 3)[1]
+                move_made = checkersai.minimax_abp(self._gamestate, self._cpu_player,
+                                                   3, float("-inf"), float("inf"))[1]
                 print("Move that was made:")
                 print(move_made)
 
