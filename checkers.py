@@ -279,10 +279,11 @@ class Checkers:
         self._check_if_valid_piece(ip_row, ip_col)
         jumped_piece, move_type = self._check_if_valid_move(ip_row, ip_col, it_row, it_col)
         #If all of ^those^ checks pass, then go ahead and update the gamestate's board.
-
+        
         self._relocate_piece(ip_row, ip_col, it_row, it_col, jumped_piece)        
         self._check_if_need_to_king(it_row, it_col)
-        
+
+        # - GameOverError is raised in _check_if_opp_can_move
         #Check if opponent has any valid moves left
         self._check_if_opp_can_move()
 
@@ -358,8 +359,11 @@ class Checkers:
         rtype: None
         """
         self._checking_opp_valid_moves = True
-        (valid_moves_exist, checked_player) = self._valid_moves_exist(self._opp_player(self._turn))
-        if not valid_moves_exist:
+        (valid_moves_exist, checked_player) = self._valid_moves_exist(
+                                                self._opp_player(self._turn))
+
+        #if not valid_moves_exist:
+        if not valid_moves_exist or self._count_colors(checked_player) == 0:
             self._set_winner_after_checking(checked_player)
             raise GameOverError
         self._checking_opp_valid_moves = False
@@ -509,9 +513,10 @@ class Checkers:
         @ip_col: A 0-based index of a player's col
         @it_row: A 0-based index of a target square's row
         @it_col: A 0-based index of a target square's col
-        return: If no exceptions were raised, a list of cell pos-
-                itions to flip as well as the type of move just
-                performed (jump or step) is returned.
+        return: If no exceptions were raised, a tuple whose first
+                component is the position of a piece that was jumped
+                and whose second component is the type of move just
+                performed (jump or step).
         rtype: list
         """
         #Is it out of bounds?
@@ -531,7 +536,8 @@ class Checkers:
         if self._move_is_jump(ip_row, ip_col, it_row, it_col):
             if not self._board[ip_row][ip_col].valid_jump(it_row, it_col, self._board):
                 raise InvalidMoveError("was not a valid jump")
-            jumped_piece = self._board[ip_row][ip_col].get_jumped_piece_coord(ip_row, ip_col, it_col, it_row)
+            jumped_piece = self._board[ip_row][ip_col].get_jumped_piece_coord(
+                                    ip_row, ip_col, it_col, it_row)
             return (jumped_piece, "jump")
         elif self._move_is_step(ip_row, ip_col, it_row, it_col):
             if ((it_row, it_col) not in self._board[ip_row][ip_col].possible_step_dirs()):
@@ -667,7 +673,7 @@ class Checkers:
             #NOTE: In checkers, IT'S REQUIRED that you make a jump if a jump is available.
             for i in range(len(self._opp_forced_pieces)):
                 valid_moves.append(self._opp_forced_pieces[i]+self._opp_forced_jumps[i]+("jump",))
-
+                
         return (valid_moves != [], turn) if not check_for_cpu else valid_moves
 
 
