@@ -234,7 +234,18 @@ class Checkers:
         rtype: str
         """
         return self._turn
-    
+
+
+    def set_winner(self, player):
+        """
+        Sets the winner of a Checkers game
+        to the given player.
+        @player: The winning player
+        return: None
+        rtype: None
+        """
+        self._winner = player
+
 
     def _count_colors(self, color):
         """
