@@ -160,6 +160,7 @@ def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
 
         return (minimax_eval(gamestate, cpu_color), None)
 
+    temp_depth = 0
     if gamestate.get_turn() == cpu_color:
         node_type = "max"
         print("AT ^_MAX_^ NODE ({})".format(gamestate.get_turn()))
@@ -175,8 +176,43 @@ def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
             dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
                                            init_turn = gamestate.get_turn())
 
-            #NOTE: make_move() will switch turns
-            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            # Make try/except for GameOverError? Game over may occur
+            # before a terminal node...If that happens, then MAKE that
+            # node where the game over occurred a terminal node?
+            # - NOTE: The base case actually already takes this into
+            #         account with the gamestate.get_winner() check...
+            # - FYI, your Othello implementation doesn't seem to
+            #   have a game over exception. Consider if which approach
+            #   you like better.
+            try:
+                dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            except checkers.GameOverError:
+                temp_depth = 0
+                #NOTE: You're basically forcing the base case here.
+                #      Ideally, I think you should have gamestate.get_winner()
+                #      take effect...
+                #THINK: Consider just setting a winner for dummy_game...
+            else:
+                #depth -= 1
+                #^NG. Don't actually want to say this or else
+                #the same depth value will be passed down the
+                #tree. You want the depth in this function and
+                #the depth to be used for the recur'd functions
+                #to be separate. If you say depth -= 1, then depth
+                #will keep on decrementing for as long as there
+                #are moves to be made for this node. Eventually,
+                #depth=0 will be arrived at, but when depth < 0,
+                #the base case never gets hit and these if/else blocks
+                #will keep executing instead. You might then be tempted
+                #to say if depth <= 0 for the base case, but what if the
+                #child node for which a negative depth value was given
+                #actually has children itself? That children would never
+                #be visited!With temp_depth, the depth
+                #at this node would consistently be, say, 2 while all the
+                #child nodes would have depth-1 (1). The recursion continues
+                #on in the stye from there.
+                temp_depth = depth-1
+
             print("MOVE MADE BY ^_MAX_^ NODE ({}, depth: {}):".\
                   format(gamestate.get_turn(), depth))
             print((move[0]+1, move[1]+1), (move[2]+1, move[3]+1))
@@ -184,7 +220,8 @@ def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
             print("")
 
             (val, move_made) = minimax_abp(dummy_game,
-                                cpu_color, depth-1, alpha, beta)
+                                cpu_color, temp_depth, alpha, beta)
+
             if val > best_val:
                 best_move, best_val = move, val
 
@@ -194,7 +231,6 @@ def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
             if beta <= alpha:
                 print("PRUNING!!!")
                 break
-
     else:
         node_type = "min"
         print("AT v_MIN_v NODE ({})".format(gamestate.get_turn()))
@@ -209,7 +245,13 @@ def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
             dummy_game = checkers.Checkers(init_config = gamestate.get_board(),
                                            init_turn = gamestate.get_turn())
 
-            dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            try:
+                dummy_game.make_move(move[0]+1, move[1]+1, move[2]+1, move[3]+1)
+            except checkers.GameOverError:
+                temp_depth = 0
+            else:
+                temp_depth = depth - 1
+
             print("MOVE MADE BY v_MIN_v NODE ({}, depth: {}):".\
                   format(gamestate.get_turn(), depth))
             print((move[0]+1, move[1]+1), (move[2]+1, move[3]+1))
@@ -217,7 +259,7 @@ def minimax_abp(gamestate, cpu_color, depth, alpha, beta):
             print("")
 
             (val, move_made) = minimax_abp(dummy_game,
-                                cpu_color, depth-1, alpha, beta)
+                                cpu_color, temp_depth, alpha, beta)
             if val < best_val:
                 best_move, best_val = move, val
 

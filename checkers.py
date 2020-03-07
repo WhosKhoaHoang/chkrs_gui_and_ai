@@ -353,8 +353,8 @@ class Checkers:
 
     def _check_if_opp_can_move(self):
         """
-        Determines if the opposing player can perform anymore moves.
-        If not, then the opposing player loses.
+        Determines if the opposing player can perform anymore
+        moves. If not, then the opposing player loses.
         return: None
         rtype: None
         """
