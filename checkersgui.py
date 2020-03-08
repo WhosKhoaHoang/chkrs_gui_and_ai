@@ -7,12 +7,13 @@ _INIT_CELL_HEIGHT = 50
 
 
 class CheckersBoard:
+    """ A class that represents the GUI for a checkers game. """
 
     def __init__(self, hum_player = "B", cpu_opp = None, allow_forced_piece_hls=True):
         """
         Initializes the attributes of a Checkers GUI game.
         @hum_player: The color of the human player
-        @cpu_opp: The color of the CPU
+        @cpu_opp: The AI opponent to play against
         @allow_forced_piece_hls: Indicates if pieces that are forced to
                                  move should be highlighted
         type hum_player: str
